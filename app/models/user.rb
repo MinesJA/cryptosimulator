@@ -7,17 +7,14 @@ class User < ActiveRecord::Base
 
 
 
-  def new_user(name)
+  def self.create_new_user(name)
     if User.all.find {|user_instance| user_instance.name == name}
       puts "Sorry, that user already exists. Do you want to create a new user?"
       #Need to run "Gets "
     else
-      User.create(name)
+      User.create(name: name)
     end
   end
-
-
-
 
 ############-----USD TRANSACTIONS---------##################
   #USD TRANSACTIONS SCHEMA
@@ -34,37 +31,42 @@ class User < ActiveRecord::Base
     #Sells = +usd_amount
     #Deposits = +usd_amount
 
-    UsdTransaction.create(self.id, usd_amount, type)
+    UsdTransaction.create(user_id: self.id, usd_amount: usd_amount, usd_transaction_type: type)
     #self.id??
   end
 
 
-  def users_usdtransactions
-    #returns all USD Transactions for this user
-    #do we need to do this in activerecord?
-    UsdTransaction.all.select do
-      |usdtransaction| usdtransaction.user_id == self.id
-    end
+  def deposit_usd(usd_amount)
+    self.create_usdtransaction(usd_amount, "Deposit")
+    puts "You just deposited $#{usd_amount}."
+    puts "You have $#{100} availible for trading."
+  end
+
+
+  def buy_usd(usd_amount)
+  end
+
+  def sell_usd(usd_amount)
   end
 
 
   def users_deposits
     #returns array of all USD Transactions that are deposits
-    self.users_usdtransactions.select do |usdtransaction|
+    self.usd_transactions.all.select do |usdtransaction|
       usdtransaction.usd_transaction_type == "Deposit"
     end
   end
 
 
   def users_buys
-    self.users_usdtransactions.select do |usdtransaction|
+    self.usd_transactions.all.select do |usdtransaction|
       usdtransaction.usd_transaction_type == "Buy"
     end
   end
 
 
   def users_sells
-    self.users_usdtransactions.select do |usdtransaction|
+    self.usd_transactions.all.select do |usdtransaction|
       usdtransaction.usd_transaction_type == "Sell"
     end
   end
@@ -75,7 +77,30 @@ class User < ActiveRecord::Base
 
   def return_usd_balance
     #iterates over all transactions for user it's called on and returns sum
-    self.users_usdtransactions.inject(0){|sum,x| sum + x }
+    #We need to refactor the crap out of this
+    deposits_and_sells = self.usd_transactions.all.select do |transaction|
+      transaction.usd_transaction_type == "Deposit" || transaction.usd_transaction_type == "Sell"
+    end
+
+    ds_usd_amounts = deposits_and_sells.map do |transaction|
+      transaction.usd_amount
+    end
+
+    ds_sum = ds_usd_amounts.inject(0) {|sum,x| sum + x }
+
+    buys = self.usd_transactions.all.select do |transaction|
+      transaction.usd_transaction_type == "Buy"
+    end
+
+    b_usd_amounts = buys.map do |transaction|
+      transaction.usd_amount
+    end
+
+    b_sum = b_usd_amounts.inject(0) {|sum,x| sum + x }
+
+    balance = ds_sum - b_sum
+
+    balance
   end
 
 
@@ -85,10 +110,20 @@ class User < ActiveRecord::Base
 
 
 
-############################################################
+############-----COIN TRANSACTIONS---------##################
 
 # Creation	#buy_coins(coin_name, amount_to_buy)
 # Creation	#sell_coins(coin_name, amount_to_sell)
+
+def buy_coin(coin_name_input, coin_amount)
+  Coin.update_coin_prices
+  #up to date db
+  
+  coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
+
+  CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc)
+
+end
 
 
 
