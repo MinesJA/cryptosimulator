@@ -3,6 +3,21 @@ class User < ActiveRecord::Base
   has_many :usd_transactions
   has_many :coins, through: :coin_transactions
 
+############-----NEW USER OR SIGNIN---------################
+
+  def new_user(name, age, country, starting_balance)
+    if User.all.find {|user_instance| user_instance.name == name}
+      
+
+    else
+      name = User.create(name, age, country)
+      name.create_usdtransaction(starting_balance, "Deposit")
+    end
+  end
+
+  def sign_in(name, password)
+
+  end
 
 
 
@@ -69,7 +84,7 @@ class User < ActiveRecord::Base
 
   def return_total_deposited_cash
     self.users_deposits.inject(0){|sum,x| sum + x }
-  end  
+  end
 
 
 
