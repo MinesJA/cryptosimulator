@@ -44,9 +44,11 @@ class User < ActiveRecord::Base
 
 
   def buy_usd(usd_amount)
+    self.create_usdtransaction(usd_amount, "Sell")
   end
 
   def sell_usd(usd_amount)
+    self.create_usdtransaction(usd_amount, "Buy")
   end
 
 
@@ -112,18 +114,57 @@ class User < ActiveRecord::Base
 
 ############-----COIN TRANSACTIONS---------##################
 
-# Creation	#buy_coins(coin_name, amount_to_buy)
-# Creation	#sell_coins(coin_name, amount_to_sell)
+  # Creation	#buy_coins(coin_name, amount_to_buy)
+  # Creation	#sell_coins(coin_name, amount_to_sell)
 
-def buy_coin(coin_name_input, coin_amount)
-  Coin.update_coin_prices
-  #up to date db
-  
-  coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
+  def buy_coin(coin_name_input, usd_amount)
+    Coin.update_coin_prices
+    #up to date db
 
-  CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc)
+    coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
 
-end
+    coin_amount = usd_amount/coin.coin_price
+
+    CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc)
+
+    #need to remove before implementation
+    self.sell_usd(usd_amount)
+  end
+
+
+  def sell_coin(coin_name_input, coin_amount_to_sell)
+    Coin.update_coin_prices
+
+    coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
+    balance_coin = self.return_coin_balance.find {|coin_instance| coin_instance.coin_id == coin.id}
+
+    CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc)
+  end
+
+  def return_coin_balance
+    uniq_transactions = self.coin_transactions.all.uniq {|transaction| transaction.coin_id}
+
+    duplicate_transactions = self.coin_transactions.all - uniq_transactions
+
+    uniq_transactions.each do |uniq_transaction|
+      duplicate_transactions.each do |dup_transaction|
+        i = 1
+        if uniq_transaction.coin_transaction_type == "Buy"
+          if uniq_transaction.coin_id == dup_transaction.coin_id
+            i += 1
+            uniq_transaction.coin_amount += dup_transaction.coin_amount
+
+            uniq_transaction.coin_price = (uniq_transaction.coin_price + dup_transaction.coin_price)/i
+          end
+        else
+          if uniq_transaction.coin_id == dup_transaction.coin_id
+            uniq_transaction.coin_amount -= dup_transaction.coin_amount
+          end
+        end
+      end
+      uniq_transactions
+    end
+  end
 
 
 
