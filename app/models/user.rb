@@ -69,11 +69,7 @@ class User < ActiveRecord::Base
 
   def return_total_deposited_cash
     self.users_deposits.inject(0){|sum,x| sum + x }
-  end
-
-  def return_growth_rate
-
-    
+  end  
 
 
 
