@@ -5,18 +5,15 @@ class User < ActiveRecord::Base
 
 ############-----NEW USER OR SIGNIN---------################
 
-  def new_user(name, age, country, starting_balance)
+
+
+  def new_user(name)
     if User.all.find {|user_instance| user_instance.name == name}
-      
-
+      puts "Sorry, that user already exists. Do you want to create a new user?"
+      #Need to run "Gets "
     else
-      name = User.create(name, age, country)
-      name.create_usdtransaction(starting_balance, "Deposit")
+      User.create(name)
     end
-  end
-
-  def sign_in(name, password)
-
   end
 
 

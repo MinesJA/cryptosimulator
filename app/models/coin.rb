@@ -13,7 +13,7 @@ class Coin < ActiveRecord::Base
       end
     end
   end
-  
+
 
   def self.update_or_create
     if Coin.all.any?
@@ -22,7 +22,7 @@ class Coin < ActiveRecord::Base
         api_coin = get_json.find {|api_coin| coin.coin_name == api_coin["name"]}
 
         coin.coin_price = api_coin["price_usd"]
-        coin.coin_marketcap = api_coin["market_cap_usd"]
+        #coin.coin_marketcap = api_coin["market_cap_usd"]
         coin.save
       end; nil
     end
