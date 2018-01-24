@@ -2,6 +2,7 @@ require 'rest-client'
 require 'JSON'
 
 # class ApiCommunicator
+# Should this be a class? Do we create new instances of api ApiCommunicator?
 
   def get_json
     info = RestClient.get("https://api.coinmarketcap.com/v1/ticker/?limit=10")
