@@ -73,7 +73,7 @@ class User < ActiveRecord::Base
   #into one and pass in the string ("Buy" "Sell" "Deposit") in as an argument
 
 
-  def return_cash_on_hand
+  def return_usd_balance
     #iterates over all transactions for user it's called on and returns sum
     self.users_usdtransactions.inject(0){|sum,x| sum + x }
   end
