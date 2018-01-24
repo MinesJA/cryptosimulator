@@ -31,7 +31,7 @@ class User < ActiveRecord::Base
   end
 
 
-  def users_usdtransaction
+  def users_usdtransactions
     #returns all USD Transactions for this user
     #do we need to do this in activerecord?
     UsdTransaction.all.select do
@@ -39,23 +39,25 @@ class User < ActiveRecord::Base
     end
   end
 
+  def users_deposits
+    #returns array of all USD Transactions that are deposits
+
+    self.users_usdtransactions.select do |usdtransaction|
+      usdtransaction.usd_transaction_type == "Deposit"
+    end
+
+  end
+
 
   def return_cash_on_hand
     #iterates over all transactions for user it's called on and returns sum
-    self.users_usdtransaction.inject(0){|sum,x| sum + x }
+    self.users_usdtransactions.inject(0){|sum,x| sum + x }
   end
 
 
   def return_total_deposited_cash
-    self.users_usdtransaction.select do |usdtransaction|
-      usdtransaction.usd_transaction_type == "Deposit"
-    end
+    self.users_deposits.inject(0){|sum,x| sum + x }
   end
-
-
-
-
-
 
 
 
