@@ -15,30 +15,27 @@ class Coin < ActiveRecord::Base
   end
 
 
-  def self.update_or_create
-    if Coin.all.any?
-
+  def self.update_coin_prices
       Coin.all.each do |coin|
         api_coin = get_json.find {|api_coin| coin.coin_name == api_coin["name"]}
-
         coin.coin_price = api_coin["price_usd"]
         #coin.coin_marketcap = api_coin["market_cap_usd"]
         coin.save
       end; nil
-    end
+      #need to figure out how to not return anything, including nil
+
   end
 
 
   def self.return_current_prices
-    Coin.all.each do |coin|
-      puts "#{coin.coin_name}........#{coin.coin_price}"
-    end
-  end
+    Coin.update_coin_prices
 
-    # def self.all_prices
-    #   Coin.all.map do |coin|
-    #     coin.coin_price
-    #   end
-    # end
+    i = 0
+
+    Coin.all.each do |coin|
+      i += 1
+      puts "#{i}. #{coin.coin_name} | $#{coin.coin_price}"
+    end; nil
+  end
 
 end
