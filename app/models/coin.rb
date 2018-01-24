@@ -3,6 +3,7 @@ class Coin < ActiveRecord::Base
   has_many :users, through: :coin_transactions
 
   def self.update_or_create
+    i = 0
     if Coin.all.empty?
       get_json.each do |coin_instance|
         Coin.create(coin_name: coin_instance["name"], coin_price: coin_instance["price_usd"], coin_marketcap: coin_instance["market_cap_usd"])
@@ -15,7 +16,8 @@ class Coin < ActiveRecord::Base
           coin.coin_price = api_coin["price_usd"]
           coin.coin_marketcap = api_coin["market_cap_usd"]
           coin.save
-          puts "#{coin.coin_name} | #{coin.coin_price} | #{coin.coin_marketcap} "
+          i += 1
+          puts "#{i}. #{coin.coin_name} | $#{coin.coin_price} | Cap:#{coin.coin_marketcap} "
         end
       end; nil
 
