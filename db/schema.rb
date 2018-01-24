@@ -9,6 +9,10 @@
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
 # It's strongly recommended that you check this file into your version control system.
+#
+######=======>>>> should we have a default value of timestamp for coin_transaction_date?
+######===>>>> Could be useful for seeding data with made up date transactions
+######=======>>>> should we add a date (includes same default as above) for usd transactions?
 
 ActiveRecord::Schema.define(version: 20180123210045) do
 
