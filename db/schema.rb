@@ -9,12 +9,24 @@
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
 # It's strongly recommended that you check this file into your version control system.
-#
-######=======>>>> should we have a default value of timestamp for coin_transaction_date?
-######===>>>> Could be useful for seeding data with made up date transactions
-######=======>>>> should we add a date (includes same default as above) for usd transactions?
 
-ActiveRecord::Schema.define(version: 20180123210045) do
+ActiveRecord::Schema.define(version: 20180124224705) do
+
+  create_table "bank_accounts", force: :cascade do |t|
+    t.integer "user_id"
+    t.float "deposited_usd_amount", default: 0.0
+    t.float "availible_usd_amount", default: 0.0
+    t.float "bitcoin_amount", default: 0.0
+    t.float "ethereum_amount", default: 0.0
+    t.float "ripple_amount", default: 0.0
+    t.float "bitcoin_cash_amount", default: 0.0
+    t.float "cardano_amount", default: 0.0
+    t.integer "litecoin_amount"
+    t.float "stellar_amount", default: 0.0
+    t.float "nem_amount", default: 0.0
+    t.float "eos_amount", default: 0.0
+    t.float "neo_amount", default: 0.0
+  end
 
   create_table "coin_transactions", force: :cascade do |t|
     t.integer "user_id"
@@ -22,6 +34,7 @@ ActiveRecord::Schema.define(version: 20180123210045) do
     t.float "coin_amount"
     t.float "coin_price"
     t.datetime "coin_transaction_date"
+    t.string "coin_transaction_type"
   end
 
   create_table "coins", force: :cascade do |t|
