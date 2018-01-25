@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180124224705) do
+ActiveRecord::Schema.define(version: 20180125020455) do
 
   create_table "bank_accounts", force: :cascade do |t|
     t.integer "user_id"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20180124224705) do
     t.float "ripple_amount", default: 0.0
     t.float "bitcoin_cash_amount", default: 0.0
     t.float "cardano_amount", default: 0.0
-    t.integer "litecoin_amount"
+    t.float "litecoin_amount", default: 0.0
     t.float "stellar_amount", default: 0.0
     t.float "nem_amount", default: 0.0
     t.float "eos_amount", default: 0.0
