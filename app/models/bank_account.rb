@@ -6,23 +6,23 @@ class BankAccount < ActiveRecord::Base
     case name.downcase
     when "bitcoin"
       "bitcoin_amount"
-    when
+    when "ethereum"
       "ethereum_amount"
-    when
+    when "ripple"
       "ripple_amount"
-    when
+    when "bitcoin cash"
       "bitcoin_cash_amount"
-    when
+    when "cardano"
       "cardano_amount"
-    when
+    when "litecoin"
       "litecoin_amount"
-    when
+    when "stellar"
       "stellar_amount"
-    when
+    when "nem"
       "nem_amount"
-    when
+    when "eos"
       "eos_amount"
-    when
+    when "neo"
       "neo_amount"
     else
       nil
