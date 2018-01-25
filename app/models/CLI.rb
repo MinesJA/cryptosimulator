@@ -1,6 +1,3 @@
-
-
-
 class CLI
 
   def welcome
@@ -39,14 +36,14 @@ class CLI
     #puts "Choose a new password:"
     #new_user[:password] = gets.chomp
 
-    puts "How old are you?"
-    new_user[:age] = gets.chomp
+    # puts "How old are you?"
+    # new_user[:age] = gets.chomp
+    #
+    # puts "What country are you living in?"
+    # new_user[:country] = gets.chomp
 
-    puts "What country are you living in?"
-    new_user[:country] = gets.chomp
-
-    self.current_user = User.create_new_account(new_user)
-
+    self.current_user = User.create_new_user(new_user)
+    account_menu
   end
 
   def signin
@@ -57,31 +54,45 @@ class CLI
 
     if self.account_verify(name)
       return_user[:name] = name
+
       puts "Welcome back, #{name}!"
       # puts "what's your password?"
       # password = gets.chomp
       # verify_password
+      self.user_login(name)
       account_menu
     else
-      puts "I'm sorry, we couldn't find that username."
-      puts "What would you like to do?"
-      puts "1. Try a different username. 2. Create a new user. 3. Exit."
-      response = gets.chomp
+      no_matching_username
+    end
+  end
+
+  def no_matching_username
+    puts "I'm sorry, we couldn't find that username."
+    puts "What would you like to do?"
+    puts "1. Try a different username. 2. Create a new user. 3. Exit."
+    response = gets.chomp
 
       case response
       when "1"
-        create_account
-      when "2"
         signin
+      when "2"
+        create_account
       when "3"
         exit
       else
         puts "I'm sorry, I didn't get that."
-        create_or_sign_in
+        signin
       end
 
 
 
+
+
+
+  def exit
+    puts "Goodbye!"
+    #end program
+  end
 
 
 
