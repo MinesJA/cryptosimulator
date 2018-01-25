@@ -154,6 +154,7 @@ class CLI
     when "5"
       view_account
       pick_coin_to_sell
+      #check
     when "6"
       watch_prices
     else
