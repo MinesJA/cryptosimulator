@@ -7,92 +7,128 @@ class User < ActiveRecord::Base
 ############-----NEW USER OR SIGNIN---------################
 
   def self.create_new_user(name)
-    if self.account_verify(name)
-      puts "Sorry, that user already exists. Do you want to create a new user?"
-      #Need to run "Gets "
-    else
       user = User.create(name: name)
       BankAccount.create(user_id: user.id)
-    end
+      user
   end
 
+
+  def self.find_by_name(user_name)
+    self.all.find {|user_instance| user_instance.name == user_name}
+  end
+
+
   def self.account_verify(name)
-    #checks to make sure an account exists
-    #Returns true
-    if User.all.find {|user_instance| user_instance.name == name}
+    #Account exists => True, else => False
+    if self.find_by_name(name)
       true
     else
       false
     end
   end
 
+
   def self.user_login(name)
     #need to add password as argument and check to make sure password matches for username
+    self.find_by_name(name)
   end
+
 
 ############-----USD TRANSACTIONS---------#################
 
-def deposit_usd(usd_amount)
 
-  # deposited_column = self.bank_accounts.first.deposited_usd_amount
-  # availible_column = self.bank_accounts.first.availible_usd_amount
-  #
-  # self.bank_accounts.first.deposited_usd_amount = deposited_column + usd_amount
-  # self.bank_accounts.first.availible_usd_amount = availible_column + usd_amount
+  def deposit_usd(usd_amount)
+    self.bank_account.deposited_usd_amount += usd_amount
+    self.bank_account.availible_usd_amount += usd_amount
 
-  self.bank_account.deposited_usd_amount += usd_amount
-  self.bank_account.availible_usd_amount += usd_amount
-
-  self.bank_account.save
-
-  puts "You just deposited $#{usd_amount}."
-  puts "You have $#{self.bank_account.availible_usd_amount} availible for trading."
-end
-
-def buy_coin(coin_name, usd_spend)
-# binding.pry
-  if usd_spend > self.bank_account.availible_usd_amount
-    puts "Insufficient funds. Deposit USD."
-  else
-    coin_table_name = coin_name.downcase + "_amount"
-
-    Coin.update_coin_prices
-
-    coin = Coin.all.find {|coin| coin.coin_name == coin_name}
-
-    coin_amount = usd_spend/coin.coin_price
-
-    CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Buy")
-
-    self.bank_account.availible_usd_amount -= usd_spend
-    self.bank_account[coin_table_name] += coin_amount
     self.bank_account.save
   end
 
-end
 
-
-
-  def sell_coin(coin_name_input, coin_amount_to_sell)
-    coin_table_name = coin_name_input.downcase + "_amount"
-
+  #TEST
+  def buy_coin(coin_name, usd_spend)
     Coin.update_coin_prices
 
-    coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
+    if usd_spend > self.bank_account.availible_usd_amount
+      puts "Insufficient funds. Deposit USD."
+      cli.view_account
+    else
+      coin_table_name = self.bank_account_translator(coin_name)
 
-    usd_amount_from_coin_sell = coin_amount_to_sell * coin.coin_price
+      coin = Coin.find_by_name(coin_name)
 
-    # balance_coin = self.return_coin_balance.find {|coin_instance| coin_instance.coin_id == coin.id}
+      coin_amount = coin.return_units_given_dollars(usd_amount)
 
-    CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Sell")
+      CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Buy")
 
-    self.bank_account[coin_table_name] -= coin_amount_to_sell
-    self.bank_account.availible_usd_amount += usd_amount_from_coin_sell
-
+      self.bank_account.availible_usd_amount -= usd_spend
+      self.bank_account[coin_table_name] += coin_amount
+      self.bank_account.save
+    end
   end
 
-  def show_user_balance
 
+  def sell_coin(coin_name, amount_to_sell)
+    Coin.update_coin_prices
+
+    coin_table_name = self.bank_account_translator(coin_name)
+    coin = Coin.find_by_name(coin_name)
+
+    if bank_account[coin_table_name] < amount_to_sell
+      puts "Sorry, you don't have enough #{coin_name} to sell #{amount_to_sell}."
+      cli.pick_amount_to_sell
+    else
+      usd_sale_total = coin_amount_to_sell * coin.coin_price
+
+      CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Sell")
+
+      self.bank_account[coin_table_name] -= amount_to_sell
+      self.bank_account.availible_usd_amount += usd_sale_total
+    end
+  end
+  #TEST
+
+
+  # def buy_coin(coin_name, usd_spend)
+  #   Coin.update_coin_prices
+  #
+  #   if usd_spend > self.bank_account.availible_usd_amount
+  #     puts "Insufficient funds. Deposit USD."
+  #   else
+  #
+  #     coin_table_name = coin_name.downcase + "_amount"
+  #
+  #     coin = Coin.all.find {|coin| coin.coin_name == coin_name}
+  #
+  #     coin_amount = usd_spend/coin.coin_price
+  #
+  #     CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Buy")
+  #
+  #     self.bank_account.availible_usd_amount -= usd_spend
+  #     self.bank_account[coin_table_name] += coin_amount
+  #     self.bank_account.save
+  #   end
+  # end
+
+  # def sell_coin(coin_name_input, coin_amount_to_sell)
+  #
+  #   coin_table_name = coin_name_input.downcase + "_amount"
+  #
+  #   Coin.update_coin_prices
+  #
+  #   coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
+  #
+  #   usd_amount_from_coin_sell = coin_amount_to_sell * coin.coin_price
+  #
+  #   # balance_coin = self.return_coin_balance.find {|coin_instance| coin_instance.coin_id == coin.id}
+  #
+  #   CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Sell")
+  #
+  #   self.bank_account[coin_table_name] -= coin_amount_to_sell
+  #   self.bank_account.availible_usd_amount += usd_amount_from_coin_sell
+  # end
+
+  def show_user_balance
     hash_balance = self.bank_account.attributes
     selected_balance = hash_balance.select do |key, value|
       key != "id" && key != "user_id" && key != "deposited_usd_amount" && value > 0
@@ -139,12 +175,6 @@ end
   # end
 
 
-  # def deposit_usd(usd_amount)
-  #   self.create_usdtransaction(usd_amount, "Deposit")
-  #   puts "You just deposited $#{usd_amount}."
-  #   puts "You have $#{100} availible for trading."
-  # end
-
 
   # def buy_usd(usd_amount)
   #   self.create_usdtransaction(usd_amount, "Sell")
@@ -175,11 +205,7 @@ end
   #     usdtransaction.usd_transaction_type == "Sell"
   #   end
   # end
-
-  #To cut down on code we could combine users_buys, users_sells, users_deposits
-  #into one and pass in the string ("Buy" "Sell" "Deposit") in as an argument
-
-
+  #
   # def return_usd_balance
   #   #iterates over all transactions for user it's called on and returns sum
   #   #We need to refactor the crap out of this
@@ -271,6 +297,8 @@ end
     #   uniq_transactions
     # end
   #end
+
+
 
 
 

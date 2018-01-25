@@ -26,6 +26,10 @@ class Coin < ActiveRecord::Base
 
   end
 
+  def self.find_by_name(coin_name)
+    self.all.find {|coin| coin.coin_name == coin_name}
+  end
+
 
   def self.return_current_prices
     Coin.update_coin_prices
@@ -36,6 +40,12 @@ class Coin < ActiveRecord::Base
       i += 1
       puts "#{i}. #{coin.coin_name} | $#{coin.coin_price}"
     end; nil
+  end
+
+
+  def return_units_given_dollars(usd_amount)
+    Coin.update_coin_prices
+    usd_amount/self.coin_price
   end
 
 end
