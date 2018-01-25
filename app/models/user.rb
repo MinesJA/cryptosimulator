@@ -51,14 +51,13 @@ class User < ActiveRecord::Base
     Coin.update_coin_prices
 
     if usd_spend > self.bank_account.availible_usd_amount
-      puts "Insufficient funds. Deposit USD."
-      cli.view_account
+      true
     else
-      coin_table_name = self.bank_account_translator(coin_name)
+      coin_table_name = BankAccount.bank_account_translator(coin_name)
 
       coin = Coin.find_by_name(coin_name)
 
-      coin_amount = coin.return_units_given_dollars(usd_amount)
+      coin_amount = coin.return_units_given_dollars(usd_spend)
 
       CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Buy")
 
@@ -72,14 +71,14 @@ class User < ActiveRecord::Base
   def sell_coin(coin_name, amount_to_sell)
     Coin.update_coin_prices
 
-    coin_table_name = self.bank_account_translator(coin_name)
+    coin_table_name = BankAccount.bank_account_translator(coin_name)
     coin = Coin.find_by_name(coin_name)
 
     if bank_account[coin_table_name] < amount_to_sell
       puts "Sorry, you don't have enough #{coin_name} to sell #{amount_to_sell}."
       cli.pick_amount_to_sell
     else
-      usd_sale_total = coin_amount_to_sell * coin.coin_price
+      usd_sale_total = amount_to_sell * coin.coin_price
 
       CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Sell")
 

@@ -74,8 +74,8 @@ class CLI
     else
       self.current_user = User.create_new_user(name)
       puts "Congratulations, #{name}! You've just created a new account."
-      puts "Check out your account below:"
-      view_account
+      puts "Welcome to your account!"
+      account_menu
     end
   end
 #checked
@@ -89,6 +89,7 @@ class CLI
       self.current_user = User.user_login(name)
       puts "Welcome back, #{name}!"
       view_account
+      account_menu
     else
       no_matching_username
     end
@@ -121,14 +122,31 @@ class CLI
 
 
   def view_account
-    self.current_user.show_user_balance
 
-    response = choices
-
-    if handle_choices(response) == response
-      "I'm sorry, I didn't get that."
-      response = choices
+    puts "#{self.current_user.name}'s Account"
+    puts "==================================================="
+    puts "Total Value of Account: #{self.current_user.total_value_of_account}"
+    puts "Total Gain/Loss: #{self.current_user.total_gain_loss.round(4)}%"
+    puts "==================================================="
+    self.current_user.select_from_balance.each do |key, value|
+      puts "#{key.upcase.gsub("_", " ")} : #{value}"
+      nil
+      #Want to make sure this doesn't return the hash as well, how do we do that?
     end
+
+
+
+    puts self.current_user.select_from_balance
+
+    #needs to change; see notes
+
+
+    # response = choices
+    #
+    # if handle_choices(response) == response
+    #   "I'm sorry, I didn't get that."
+    #   response = choices
+    # end
   end
   ####$$$$$$$$$$$$$ ----- have a question about this one
 
@@ -141,6 +159,7 @@ class CLI
     case response
     when "1"
       view_account
+      account_menu
       #check
     when "2"
       deposit
@@ -152,11 +171,15 @@ class CLI
       pick_coin_to_buy
       #check
     when "5"
-      view_account
+      puts self.current_user.select_from_balance
+
+      #need to format select_from_balance and only return coins (not usd or gains)
       pick_coin_to_sell
       #check
     when "6"
       watch_prices
+    when "7"
+      exit_program
     else
       puts "I'm sorry, I didn't get that."
       account_menu
@@ -175,6 +198,7 @@ class CLI
         puts "You have $#{self.current_user.bank_account.availible_usd_amount} availible for trading."
         puts "Check out your account below:"
         view_account
+        account_menu
       else
         puts "I'm sorry, I didn't get that."
         puts "You need to enter a valid number greater than 0."
@@ -206,6 +230,11 @@ class CLI
     # 10. NEO | $136.152
   end
 
+  def watch_prices
+    Coin.return_current_prices
+    account_menu
+  end
+
 ########## -------- BUY COIN ---------- #################
 
   def pick_coin_to_buy
@@ -228,12 +257,14 @@ class CLI
   def pick_amount_to_buy(coin)
     puts "Great! And how much USD worth of #{coin.coin_name} would you like to buy?"
     response = choices
-    usd_amount = handle_choices(resp).to_f.round(2)
+    usd_amount = handle_choices(response).to_f.round(2)
+
+    #this is where you should check to see if you have enough money to complete purchase
 
     if usd_amount > 0
       units = coin.return_units_given_dollars(usd_amount).round(2)
       puts "Awesome! At the current price, you'd get #{units} of #{coin.coin_name} with a total USD cost of $#{usd_amount}."
-      complete_purchase(coin.coin_name, usd_amount)
+      complete_purchase(coin.coin_name, usd_amount, units)
     else
       puts "I'm sorry, I didn't get that. Please enter a positive number."
       pick_amount_to_buy(coin)
@@ -241,14 +272,23 @@ class CLI
   end
 
 
-  def complete_purchase(name, usd_amount)
+  def complete_purchase(name, usd_amount, unit_amount)
     puts "Would you like to complete your purchase? (Y/N)"
     response = choices
     answer = handle_choices(response)
 
-    case answer
+    case answer.downcase
     when "y"
-      self.current_user.buy_coin(name, usd_amount)
+      if self.current_user.buy_coin(name, usd_amount)
+        puts "Insufficient funds. Change the amount to buy."
+        coin = Coin.find_by_name(name)
+        pick_amount_to_buy(coin)
+      else
+        self.current_user.buy_coin(name, usd_amount)
+        puts "Great! Your transaction is confirmed."
+        puts "You now have #{unit_amount} #{name} availible in your account!"
+        account_menu
+      end
     when "n"
       puts "What would you like to do then?"
       puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
@@ -266,17 +306,23 @@ class CLI
         puts "Sorry, I didn't get that."
         complete_purchase(name, usd_amount)
       end
+    else
+      puts "Sorry, I didn't get that."
+      complete_purchase(name, usd_amount)
     end
   end
 
   ########## -------- SELL COIN ---------- #################
 
   def pick_coin_to_sell
-    puts "Enter the name of the coin you'd like to buy:"
+
+    puts "Enter the name of the coin you'd like to sell:"
     response = choices
     name = handle_choices(response)
 
     coin = Coin.find_by_name(name)
+
+    #search for coin before saying "Great!" If user doesn't have coin, say "Sorry"
 
     if coin
       pick_amount_to_sell(coin)
@@ -289,9 +335,9 @@ class CLI
   def pick_amount_to_sell(coin)
     puts "Great! And how many units of #{coin.coin_name} would you like to sell?"
     response = choices
-    amount_to_sell = handle_choices(resp).to_f
+    amount_to_sell = handle_choices(response).to_f
 
-    coin_table_name = self.current_user.bank_account_translator(coin.coin_name)
+    coin_table_name = BankAccount.bank_account_translator(coin.coin_name)
     Coin.update_coin_prices
 
 
@@ -312,7 +358,10 @@ class CLI
 
     case answer
     when "y"
-      self.current_user.sell_coin(name, amount_to_sell)
+      self.current_user.sell_coin(coin_name, amount_to_sell)
+      puts "Great! Your transaction is confirmed."
+      puts "You just sold #{amount_to_sell} #{coin_name}."
+      account_menu
     when "n"
       puts "What would you like to do then?"
       puts "1. Return to main menu. 2. Change amount to sell. 3. Change coin. 4. Exit"
@@ -321,7 +370,8 @@ class CLI
       when "1"
         account_menu
       when "2"
-        pick_amount_to_sell(name)
+        coin = Coin.find_by_name(coin_name)
+        pick_amount_to_sell(coin)
       when "3"
         pick_coin_to_sell
       when "4"

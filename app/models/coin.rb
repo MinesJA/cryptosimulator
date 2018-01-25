@@ -2,6 +2,9 @@ class Coin < ActiveRecord::Base
   has_many :coin_transactions
   has_many :users, through: :coin_transactions
 
+#need to fix this, should import once and then update coin prices going after that
+
+
   def self.start_import
     if Coin.all.empty?
       get_json.each do |coin_instance|
@@ -9,11 +12,10 @@ class Coin < ActiveRecord::Base
         price = coin_instance["price_usd"]
         #marketcap = coin_instance["market_cap_usd"]
 
-        Coin.create(coin_name: name, coin_price: price, coin_marketcap: marketcap)
+        Coin.create(coin_name: name, coin_price: price)
       end
     end
   end
-
 
   def self.update_coin_prices
       Coin.all.each do |coin|
@@ -23,11 +25,10 @@ class Coin < ActiveRecord::Base
         coin.save
       end; nil
       #need to figure out how to not return anything, including nil
-
   end
 
   def self.find_by_name(coin_name)
-    self.all.find {|coin| coin.coin_name == coin_name}
+    self.all.find {|coin| coin.coin_name.downcase == coin_name.downcase}
   end
 
 
