@@ -129,7 +129,7 @@ class User < ActiveRecord::Base
   #   self.bank_account.availible_usd_amount += usd_amount_from_coin_sell
   # end
 
-  def show_user_balance
+  def select_from_balance
     hash_balance = self.bank_account.attributes
     selected_balance = hash_balance.select do |key, value|
       key != "id" && key != "user_id" && key != "deposited_usd_amount" && value > 0
