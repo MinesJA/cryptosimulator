@@ -38,4 +38,10 @@ class Coin < ActiveRecord::Base
     end; nil
   end
 
+
+  def self.return_units_given_dollars(coin_name, usd_amount)
+    coin = Coin.all.find {|coin| coin.coin_name == coin_name}
+    (usd_amount/coin.coin_price)
+  end
+
 end

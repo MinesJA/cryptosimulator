@@ -31,19 +31,13 @@ class User < ActiveRecord::Base
 
 def deposit_usd(usd_amount)
 
-  # deposited_column = self.bank_accounts.first.deposited_usd_amount
-  # availible_column = self.bank_accounts.first.availible_usd_amount
-  #
-  # self.bank_accounts.first.deposited_usd_amount = deposited_column + usd_amount
-  # self.bank_accounts.first.availible_usd_amount = availible_column + usd_amount
-
   self.bank_account.deposited_usd_amount += usd_amount
   self.bank_account.availible_usd_amount += usd_amount
 
   self.bank_account.save
 
-
 end
+
 
 def buy_coin(coin_name, usd_spend)
 # binding.pry
@@ -133,12 +127,6 @@ end
   # end
 
 
-  # def deposit_usd(usd_amount)
-  #   self.create_usdtransaction(usd_amount, "Deposit")
-  #   puts "You just deposited $#{usd_amount}."
-  #   puts "You have $#{100} availible for trading."
-  # end
-
 
   # def buy_usd(usd_amount)
   #   self.create_usdtransaction(usd_amount, "Sell")
@@ -169,11 +157,7 @@ end
   #     usdtransaction.usd_transaction_type == "Sell"
   #   end
   # end
-
-  #To cut down on code we could combine users_buys, users_sells, users_deposits
-  #into one and pass in the string ("Buy" "Sell" "Deposit") in as an argument
-
-
+  #
   # def return_usd_balance
   #   #iterates over all transactions for user it's called on and returns sum
   #   #We need to refactor the crap out of this

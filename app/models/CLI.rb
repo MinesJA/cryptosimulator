@@ -6,12 +6,37 @@ class CLI
     #current_user is supposed to be a User Instance
   end
 
+  ############-----Gives Option to Quit or Go to Main Menu---------###############
+
+  def choices
+    puts "Type 'exit' to exit the program or 'menu' to go to the main menu."
+    gets.chomp
+    #should return response value
+  end
+  #check
+
+  def handle_choices(input)
+    case input.downcase
+    when 'exit'
+      exit_program
+      #check
+    when 'menu'
+      account_menu
+
+    else
+      input
+    end
+  end
+  #check
+
+  ################################################################################
 
   def self.welcome
     puts "Welcome to CryptoSimulator!"
     cli = CLI.new
     cli.create_or_sign_in
   end
+  #checked
 
 
   def create_or_sign_in
@@ -23,44 +48,38 @@ class CLI
     case response
     when "1"
       create_account
+      #check
     when "2"
       signin
+      #check
     when "3"
       exit_program
+      #check
     else
       puts "I'm sorry, I didn't get that."
       create_or_sign_in
     end
   end
+  #checked
 
 
   def create_account
-    #new_user = {}
-
     puts "Great! Let's get you setup."
-
     puts "What's your name?"
     puts "(This will be the name you'll login with in the future)"
     name = gets.chomp
 
     if User.account_verify(name)
       puts "I'm sorry, that account already exists."
-      puts "What would you like to do?"
       create_or_sign_in
     else
       self.current_user = User.create_new_user(name)
-      account_menu
+      puts "Congratulations, #{name}! You've just created a new account."
+      puts "Check out your account below:"
+      view_account
     end
-
-    #puts "Choose a new password:"
-    #new_user[:password] = gets.chomp
-
-    # puts "How old are you?"
-    # new_user[:age] = gets.chomp
-    #
-    # puts "What country are you living in?"
-    # new_user[:country] = gets.chomp
   end
+#checked
 
 
   def signin
@@ -68,24 +87,14 @@ class CLI
     name = gets.chomp
 
     if User.account_verify(name)
-      # puts "what's your password?"
-      # password = gets.chomp
-      # verify_password
       self.current_user = User.user_login(name)
       puts "Welcome back, #{name}!"
-      binding.pry
-      account_menu
+      view_account
     else
       no_matching_username
     end
   end
-
-  def create_or_sign_in
-    puts "Would you like to sign in or log in to an existing account?"
-
-    puts "1. Create a new account. 2. Log in to an existing account. 3. Exit."
-    response = gets.chomp
-  end
+  #checked
 
 
   def no_matching_username
@@ -97,29 +106,46 @@ class CLI
     case response
     when "1"
       signin
+      #check
     when "2"
       create_account
+      #check
     when "3"
       exit_program
+      #check
     else
       puts "I'm sorry, I didn't get that."
       signin
     end
   end
+  #checked
+
+
+  def view_account
+    self.current_user.show_user_balance
+
+    response = choices
+
+    if handle_choices(response) == response
+      "I'm sorry, I didn't get that."
+      response = choices
+    end
+  end
+  ####$$$$$$$$$$$$$ ----- have a question about this one
 
 
   def account_menu
-    puts "What would you like to do, #{self.current_user.name}"
-    puts "Enter the number associated with your choice below:"
+    puts "Choose an option below by entering the number associated with your choice.:"
     puts "1. View Account. 2. Deposit USD. 3. See leaderboard. 4. Buy coins. 5. Sell Coins. 6. Watch prices. 7. Exit "
-
     response = gets.chomp
 
     case response
     when "1"
       view_account
+      #check
     when "2"
       deposit
+
     when "3"
       leaderboard
     when "4"
@@ -135,53 +161,30 @@ class CLI
   end
 
 
-  def view_account
-    self.current_user.show_user_balance
-
-    puts "What would you like to do now?"
-    puts "Enter the number associated with your choice below:"
-    puts "1. Go back to main menu. 2. Exit."
-    response = gets.chomp
-
-    case response
-    when "1"
-      account_menu
-    when "2"
-      exit_program
-    else
-      puts "I'm sorry, I didn't get that."
-    end
-  end
-
-
   def deposit
     puts "Sure thing. How much USD would you like to deposit?"
-    puts "You can else enter 'exit' to exit the program, or 'menu' to go back to the main menu."
-    usd_amount = gets.chomp
-
-    if usd_amount.downcase == "exit"
-      exit_program
-    elsif usd_amount.downcase == "menu"
-      account_menu
-    else
-      usd_amount = gets.chomp.to_f.round(2)
+    response = choices
+    usd_amount = handle_choices(response).to_f.round(2)
 
       if usd_amount > 0
         self.current_user.deposit_usd(usd_amount)
         puts "You just deposited $#{usd_amount}."
         puts "You have $#{self.current_user.bank_account.availible_usd_amount} availible for trading."
-        account_menu
+        puts "Check out your account below:"
+        view_account
       else
         puts "I'm sorry, I didn't get that."
         puts "You need to enter a valid number greater than 0."
         deposit
       end
-    end
+
   end
+
 
   def leaderboard
 
   end
+
 
   def buy_coins
     puts "What coins would you like to buy?"
@@ -211,25 +214,25 @@ class CLI
 
     case coin
     when "1"
-      name = "bitcoin"
+      complete_purchase("bitcoin")
     when "2"
-      name = "ethereum"
+      complete_purchase("ethereum")
     when "3"
-      name = "ripple"
+      complete_purchase("ripple")
     when "4"
-      name = "bitcoin cash"
+      complete_purchase("bitcoin cash")
     when "5"
-      name = "cardano"
+      complete_purchase("cardano")
     when "6"
-      name = "litecoin"
+      complete_purchase("litecoin")
     when "7"
-      name = "stellar"
+      complete_purchase("stellar")
     when "8"
-      name = "nem"
+      complete_purchase("nem")
     when "9"
-      name = "eos"
+      complete_purchase("eos")
     when "10"
-      name = "neo"
+      complete_purchase("neo")
     when "exit"
       exit_program
     when "menu"
@@ -238,20 +241,52 @@ class CLI
       puts "I'm sorry, I didn't get that."
       buy_coins
     end
-
-
-
-    self.current_user.buy_coin("Bitcoin", )
-
-
-
-
   end
 
 
 
+  def complete_purchase(name)
+    puts "Great! And how many USD worth of #{name} would you like to buy?"
+    resp = choices
+    usd_amount = handle_choices(resp).to_f.round(2)
+
+    if usd_amount > 0
+      units = Coin.return_units_given_dollars(name, usd_amount).round(2)
+      puts "Awesome! At the current price, you'd get #{units} of #{name} with a total USD cost of $#{usd_amount}."
+      puts "Would you like to complete your purchase? (Y/N)"
+      response = gets.chomp.downcase
+
+      case response
+      when "y"
+        self.current_user.buy_coin(name, usd_amount)
+
+      when "n"
+        puts "What would you like to do then?"
+        puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
+        response = gets.chomp.downcase
+        case response
+        when "1"
+
+        when "2"
+        when "3"
+
+        when "4"
+        else
+          puts "Sorry, I didn't get that."
+
+      else
+        puts "Sorry, I didn't get that."
+        complete_purchase
+        end
+      end
+    end
+  end
+
+#
+
+
   def exit_program
-    puts "Goodbye!"
+    abort("Goodby!")
     #end program
   end
 
