@@ -82,13 +82,34 @@ class CLI
 
 
   def signin
+<<<<<<< HEAD
+=======
+    # return_user = {}
+
+>>>>>>> users-interface-a
     puts "Whats your name?"
     name = gets.chomp
 
     if User.account_verify(name)
+<<<<<<< HEAD
       self.current_user = User.user_login(name)
       puts "Welcome back, #{name}!"
       view_account
+=======
+      # return_user[:name] = name
+
+      puts "Welcome back, #{name}!"
+      # puts "what's your password?"
+      # password = gets.chomp
+      # verify_password
+      self.current_user = User.user_login(name)
+      self.current_user.show_user_balance
+      # account_menu
+      # binding.pry
+# /////ACCOUNT DETAILS
+# /////ACCOUNT MENU
+
+>>>>>>> users-interface-a
     else
       no_matching_username
     end
@@ -102,20 +123,6 @@ class CLI
     puts "1. Try a different username. 2. Create a new user. 3. Exit."
     response = gets.chomp
 
-<<<<<<< HEAD
-      case response
-      when "1"
-        signin
-      when "2"
-        create_account
-      when "3"
-        exit
-      else
-        puts "I'm sorry, I didn't get that."
-        signin
-      end
-end
-=======
     case response
     when "1"
       signin
@@ -133,7 +140,6 @@ end
   end
   #checked
 
->>>>>>> 4c4bd530d49664bde4e3fa666ab0753782324569
 
   def view_account
     self.current_user.show_user_balance
