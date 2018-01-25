@@ -7,13 +7,9 @@ class User < ActiveRecord::Base
 ############-----NEW USER OR SIGNIN---------################
 
   def self.create_new_user(name)
-    if self.account_verify(name)
-      puts "Sorry, that user already exists. Do you want to create a new user?"
-      #Need to run "Gets "
-    else
       user = User.create(name: name)
       BankAccount.create(user_id: user.id)
-    end
+      user
   end
 
   def self.account_verify(name)
@@ -28,6 +24,7 @@ class User < ActiveRecord::Base
 
   def self.user_login(name)
     #need to add password as argument and check to make sure password matches for username
+    User.all.find {|user| user.name == name}
   end
 
 ############-----USD TRANSACTIONS---------#################
