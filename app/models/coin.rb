@@ -7,7 +7,7 @@ class Coin < ActiveRecord::Base
       get_json.each do |coin_instance|
         name = coin_instance["name"]
         price = coin_instance["price_usd"]
-        marketcap = coin_instance["market_cap_usd"]
+        #marketcap = coin_instance["market_cap_usd"]
 
         Coin.create(coin_name: name, coin_price: price, coin_marketcap: marketcap)
       end
