@@ -22,7 +22,6 @@ class CLI
       #check
     when 'menu'
       account_menu
-
     else
       input
     end
@@ -145,13 +144,16 @@ class CLI
       #check
     when "2"
       deposit
-
+      #check
     when "3"
       leaderboard
     when "4"
-      buy_coins
+      view_availible_coins
+      pick_coin_to_buy
+      #check
     when "5"
-      sell_coins
+      view_account
+      pick_coin_to_sell
     when "6"
       watch_prices
     else
@@ -177,21 +179,17 @@ class CLI
         puts "You need to enter a valid number greater than 0."
         deposit
       end
-
   end
+  #check
 
 
   def leaderboard
 
   end
 
-
-  def buy_coins
+  def view_availible_coins
     puts "What coins would you like to buy?"
-    sleep 1
-
     puts "Here's a list of all the availible coins for sale:"
-    sleep 1
 
     Coin.return_current_prices
 
@@ -205,85 +203,104 @@ class CLI
     # 8. NEM | $0.931868
     # 9. EOS | $13.9
     # 10. NEO | $136.152
-
-    sleep 1
-
-    puts "Enter the corresponding number for the coin you'd like to buy:"
-    puts "You can also type 'exit' or 'menu' to exit the program or get back to the main menu."
-    coin = gets.chomp.downcase
-
-    case coin
-    when "1"
-      complete_purchase("bitcoin")
-    when "2"
-      complete_purchase("ethereum")
-    when "3"
-      complete_purchase("ripple")
-    when "4"
-      complete_purchase("bitcoin cash")
-    when "5"
-      complete_purchase("cardano")
-    when "6"
-      complete_purchase("litecoin")
-    when "7"
-      complete_purchase("stellar")
-    when "8"
-      complete_purchase("nem")
-    when "9"
-      complete_purchase("eos")
-    when "10"
-      complete_purchase("neo")
-    when "exit"
-      exit_program
-    when "menu"
-      account_menu
-    else
-      puts "I'm sorry, I didn't get that."
-      buy_coins
-    end
   end
 
 
+  def pick_coin_to_buy
+    puts "Enter the name of the coin you'd like to buy:"
+    response = choices
+    coin = handle_choices(response).downcase
 
-  def complete_purchase(name)
-    puts "Great! And how many USD worth of #{name} would you like to buy?"
-    resp = choices
+    if Coin.all.find {|coin| coin.coin_name == coin}
+      pick_amount_to_buy(coin)
+    else
+      puts "I'm sorry, I didn't get that."
+      pick_coin_to_buy
+    end
+
+    # case coin
+    # when "1"
+    #   pick_amount_to_buy("bitcoin")
+    # when "2"
+    #   pick_amount_to_buy("ethereum")
+    # when "3"
+    #   pick_amount_to_buy("ripple")
+    # when "4"
+    #   pick_amount_to_buy("bitcoin cash")
+    # when "5"
+    #   pick_amount_to_buy("cardano")
+    # when "6"
+    #   pick_amount_to_buy("litecoin")
+    # when "7"
+    #   pick_amount_to_buy("stellar")
+    # when "8"
+    #   pick_amount_to_buy("nem")
+    # when "9"
+    #   pick_amount_to_buy("eos")
+    # when "10"
+    #   pick_amount_to_buy("neo")
+
+  end
+  #check
+
+
+  def pick_amount_to_buy(name)
+    puts "Great! And how much USD worth of #{name} would you like to buy?"
+    response = choices
     usd_amount = handle_choices(resp).to_f.round(2)
 
     if usd_amount > 0
       units = Coin.return_units_given_dollars(name, usd_amount).round(2)
       puts "Awesome! At the current price, you'd get #{units} of #{name} with a total USD cost of $#{usd_amount}."
-      puts "Would you like to complete your purchase? (Y/N)"
+      complete_purchase(name, usd_amount)
+    else
+      ####come back to this
+    end
+  end
+
+
+  def complete_purchase(name, usd_amount)
+    puts "Would you like to complete your purchase? (Y/N)"
+    response = choices
+    answer = handle_choices(response)
+
+    case answer
+    when "y"
+      self.current_user.buy_coin(name, usd_amount)
+    when "n"
+      puts "What would you like to do then?"
+      puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
       response = gets.chomp.downcase
-
       case response
-      when "y"
-        self.current_user.buy_coin(name, usd_amount)
-
-      when "n"
-        puts "What would you like to do then?"
-        puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
-        response = gets.chomp.downcase
-        case response
-        when "1"
-
-        when "2"
-        when "3"
-
-        when "4"
-        else
-          puts "Sorry, I didn't get that."
-
+      when "1"
+        account_menu
+      when "2"
+        pick_amount_to_buy(name)
+      when "3"
+        pick_coin_to_buy
+      when "4"
+        exit_program
       else
         puts "Sorry, I didn't get that."
         complete_purchase
-        end
       end
     end
   end
 
-#
+  def sell_coin
+    puts "Enter the corresponding number for the coin you'd like to sell:"
+    response = choices
+    coin = handle_choices(response)
 
+    if 
+
+    else
+      puts "I'm sorry, I didn't get that."
+      buy_coins
+    end
+
+
+  end
 
   def exit_program
     abort("Goodby!")

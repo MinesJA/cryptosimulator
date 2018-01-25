@@ -76,7 +76,6 @@ end
 
     self.bank_account[coin_table_name] -= coin_amount_to_sell
     self.bank_account.availible_usd_amount += usd_amount_from_coin_sell
-
   end
 
   def show_user_balance
@@ -249,6 +248,8 @@ end
     #   uniq_transactions
     # end
   #end
+
+  
 
 
 
