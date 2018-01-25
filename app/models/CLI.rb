@@ -32,6 +32,7 @@ class CLI
 
   def self.welcome
     puts "Welcome to CryptoSimulator!"
+    puts ""
     cli = CLI.new
     cli.create_or_sign_in
   end
@@ -41,6 +42,7 @@ class CLI
   def create_or_sign_in
     puts "Would you like to sign in or log in to an existing account?"
     puts "Enter the number associated with your choice below:"
+    puts "-------------------------------------------------"
     puts "1. Create a new account. 2. Log in to an existing account. 3. Exit."
     response = gets.chomp
 
@@ -87,7 +89,11 @@ class CLI
 
     if User.account_verify(name)
       self.current_user = User.user_login(name)
+
+      puts ""
       puts "Welcome back, #{name}!"
+      puts ""
+
       view_account
       account_menu
     else
@@ -387,7 +393,7 @@ class CLI
 
 
   def exit_program
-    abort("Goodby!")
+    abort("Goodbye!")
     #end program
   end
 
