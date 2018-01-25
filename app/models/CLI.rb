@@ -82,34 +82,13 @@ class CLI
 
 
   def signin
-<<<<<<< HEAD
-=======
-    # return_user = {}
-
->>>>>>> users-interface-a
     puts "Whats your name?"
     name = gets.chomp
 
     if User.account_verify(name)
-<<<<<<< HEAD
       self.current_user = User.user_login(name)
       puts "Welcome back, #{name}!"
       view_account
-=======
-      # return_user[:name] = name
-
-      puts "Welcome back, #{name}!"
-      # puts "what's your password?"
-      # password = gets.chomp
-      # verify_password
-      self.current_user = User.user_login(name)
-      self.current_user.show_user_balance
-      # account_menu
-      # binding.pry
-# /////ACCOUNT DETAILS
-# /////ACCOUNT MENU
-
->>>>>>> users-interface-a
     else
       no_matching_username
     end
