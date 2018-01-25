@@ -205,56 +205,37 @@ class CLI
     # 10. NEO | $136.152
   end
 
+########## -------- BUY COIN ---------- #################
 
   def pick_coin_to_buy
     puts "Enter the name of the coin you'd like to buy:"
     response = choices
-    coin = handle_choices(response).downcase
+    name = handle_choices(response).downcase
 
-    if Coin.all.find {|coin| coin.coin_name == coin}
+    coin = Coin.find_by_name(name)
+
+    if coin
       pick_amount_to_buy(coin)
     else
       puts "I'm sorry, I didn't get that."
       pick_coin_to_buy
     end
-
-    # case coin
-    # when "1"
-    #   pick_amount_to_buy("bitcoin")
-    # when "2"
-    #   pick_amount_to_buy("ethereum")
-    # when "3"
-    #   pick_amount_to_buy("ripple")
-    # when "4"
-    #   pick_amount_to_buy("bitcoin cash")
-    # when "5"
-    #   pick_amount_to_buy("cardano")
-    # when "6"
-    #   pick_amount_to_buy("litecoin")
-    # when "7"
-    #   pick_amount_to_buy("stellar")
-    # when "8"
-    #   pick_amount_to_buy("nem")
-    # when "9"
-    #   pick_amount_to_buy("eos")
-    # when "10"
-    #   pick_amount_to_buy("neo")
-
   end
   #check
 
 
-  def pick_amount_to_buy(name)
-    puts "Great! And how much USD worth of #{name} would you like to buy?"
+  def pick_amount_to_buy(coin)
+    puts "Great! And how much USD worth of #{coin.coin_name} would you like to buy?"
     response = choices
     usd_amount = handle_choices(resp).to_f.round(2)
 
     if usd_amount > 0
-      units = Coin.return_units_given_dollars(name, usd_amount).round(2)
-      puts "Awesome! At the current price, you'd get #{units} of #{name} with a total USD cost of $#{usd_amount}."
-      complete_purchase(name, usd_amount)
+      units = coin.return_units_given_dollars(usd_amount).round(2)
+      puts "Awesome! At the current price, you'd get #{units} of #{coin.coin_name} with a total USD cost of $#{usd_amount}."
+      complete_purchase(coin.coin_name, usd_amount)
     else
-      ####come back to this
+      puts "I'm sorry, I didn't get that. Please enter a positive number."
+      pick_amount_to_buy(coin)
     end
   end
 
@@ -282,35 +263,82 @@ class CLI
         exit_program
       else
         puts "Sorry, I didn't get that."
-        complete_purchase
+        complete_purchase(name, usd_amount)
       end
     end
   end
 
-  def sell_coin
-    puts "Enter the corresponding number for the coin you'd like to sell:"
+  ########## -------- SELL COIN ---------- #################
+
+  def pick_coin_to_sell
+    puts "Enter the name of the coin you'd like to buy:"
     response = choices
-    coin = handle_choices(response)
+    name = handle_choices(response)
 
-    if 
+    coin = Coin.find_by_name(name)
 
+    if coin
+      pick_amount_to_sell(coin)
     else
       puts "I'm sorry, I didn't get that."
-      buy_coins
+      pick_coin_to_sell
     end
-
-
   end
+
+  def pick_amount_to_sell(coin)
+    puts "Great! And how many units of #{coin.coin_name} would you like to sell?"
+    response = choices
+    amount_to_sell = handle_choices(resp).to_f
+
+    coin_table_name = self.current_user.bank_account_translator(coin.coin_name)
+    Coin.update_coin_prices
+
+
+    if amount_to_sell < self.current_user.bank_account[coin_table_name]
+      usd_amount = amount_to_sell * coin.coin_price
+      puts "Awesome! You'd like to sell #{amount_to_sell} #{coin.coin_name} for $#{usd_amount}."
+      complete_sale(coin.coin_name, usd_amount)
+    else
+      puts "I'm sorry, I didn't get that. Please enter a positive number."
+      pick_amount_to_sell(coin)
+    end
+  end
+
+  def complete_sale(coin_name, amount_to_sell)
+    puts "Would you like to complete your sale? (Y/N)"
+    response = choices
+    answer = handle_choices(response)
+
+    case answer
+    when "y"
+      self.current_user.sell_coin(name, amount_to_sell)
+    when "n"
+      puts "What would you like to do then?"
+      puts "1. Return to main menu. 2. Change amount to sell. 3. Change coin. 4. Exit"
+      response = gets.chomp.downcase
+      case response
+      when "1"
+        account_menu
+      when "2"
+        pick_amount_to_sell(name)
+      when "3"
+        pick_coin_to_sell
+      when "4"
+        exit_program
+      else
+        puts "Sorry, I didn't get that."
+        complete_sale(coin_name, amount_to_sell)
+      end
+    end
+  end
+
+  ############################################################
+
 
   def exit_program
     abort("Goodby!")
     #end program
   end
-
-
-
-
-
 
 
 end
