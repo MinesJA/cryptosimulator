@@ -1,8 +1,15 @@
 class CLI
+  attr_accessor :current_user
 
-  def welcome
+  def initialize
+    @current_user = nil
+    #current_user is supposed to be a User Instance
+  end
+
+  def self.welcome
     puts "Welcome to CryptoSimulator!"
-    create_or_sign_in
+    cli = CLI.new
+    cli.create_or_sign_in
   end
 
   def create_or_sign_in
@@ -25,13 +32,22 @@ class CLI
   end
 
   def create_account
-    new_user = {}
+    #new_user = {}
 
     puts "Great! Let's get you setup."
 
     puts "What's your name?"
     puts "(This will be the name you'll login with in the future)"
-    new_user[:name] = gets.chomp
+    name = gets.chomp
+
+    if User.account_verify(name)
+      puts "I'm sorry, that account already exists."
+      puts "What would you like to do?"
+      create_or_sign_in
+    else
+      self.current_user = User.create_new_user(name)
+      account_menu
+    end
 
     #puts "Choose a new password:"
     #new_user[:password] = gets.chomp
@@ -41,9 +57,10 @@ class CLI
     #
     # puts "What country are you living in?"
     # new_user[:country] = gets.chomp
+  end
 
-    self.current_user = User.create_new_user(new_user)
-    account_menu
+  def account_menu
+    puts "You're signed in!"
   end
 
   def signin
@@ -52,14 +69,14 @@ class CLI
     puts "Whats your name?"
     name = gets.chomp
 
-    if self.account_verify(name)
+    if User.account_verify(name)
       return_user[:name] = name
 
       puts "Welcome back, #{name}!"
       # puts "what's your password?"
       # password = gets.chomp
       # verify_password
-      self.user_login(name)
+      User.user_login(name)
       account_menu
     else
       no_matching_username
@@ -72,17 +89,18 @@ class CLI
     puts "1. Try a different username. 2. Create a new user. 3. Exit."
     response = gets.chomp
 
-      case response
-      when "1"
-        signin
-      when "2"
-        create_account
-      when "3"
-        exit
-      else
-        puts "I'm sorry, I didn't get that."
-        signin
-      end
+    case response
+    when "1"
+      signin
+    when "2"
+      create_account
+    when "3"
+      exit
+    else
+      puts "I'm sorry, I didn't get that."
+      signin
+    end
+  end
 
 
 
