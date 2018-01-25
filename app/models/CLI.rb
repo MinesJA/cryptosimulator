@@ -83,7 +83,7 @@ class CLI
         puts "I'm sorry, I didn't get that."
         signin
       end
-
+end
 
 
 
