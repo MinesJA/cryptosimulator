@@ -27,6 +27,7 @@ class User < ActiveRecord::Base
   end
 
   def self.user_login(name)
+    User.all.find {|user| user.name == name}
     #need to add password as argument and check to make sure password matches for username
   end
 
@@ -91,16 +92,31 @@ end
 
   end
 
-  def show_user_balance
-
+  def select_from_balance
     hash_balance = self.bank_account.attributes
     selected_balance = hash_balance.select do |key, value|
       key != "id" && key != "user_id" && key != "deposited_usd_amount" && value > 0
     end
 
+    # selected_balance.each do |key, value|
+    #   puts "#{key.upcase.gsub("_", " ")} : #{value}"
+    # end
+  end
+
+# elsif key == "deposited_usd_amount"
+#   usd_deposited = value
+
+
+  def total_value_of_account
+    Coin.update_coin_prices
     all_sums = 0
-    selected_balance.each do |key, value|
-      puts "#{key.upcase.gsub("_", " ")} : #{value}"
+    usd_available = 0
+    select_from_balance.each do |key, value|
+      # puts "#{key.upcase.gsub("_", " ")} : #{value}"
+      if key == "availible_usd_amount"
+        usd_available = value
+      end
+
       coin_key_name = key.split("_").first
 
         Coin.all.each do |coin|
@@ -108,22 +124,44 @@ end
           each_coin_sum = coin.coin_price * value
           all_sums += each_coin_sum
           end
+
         end
+
       end
-
-      puts "Coins value in USD #{all_sums}"
-# binding.pry
-    # end
-
-
-      # selected_coins.each do |coin|
-      #   puts "Value in USD: #{coin.coin_price * value}"
-      # end
-    # binding.pry
+      total_value = (all_sums + usd_available).round(2)
+      # puts "Coins value in USD #{all_sums} + #{usd_available}"
   end
 
+  def total_gain_loss
 
+    hash_balance = self.bank_account.attributes
+    selected_balance = hash_balance.select do |key, value|
+      key == "deposited_usd_amount"
+    end
 
+    deposited = selected_balance["deposited_usd_amount"]
+    gain_loss = (((total_value_of_account - deposited)/deposited).round(5))*100
+
+    self.bank_account.gain_loss = gain_loss
+    self.bank_account.save
+    self.bank_account.gain_loss
+
+  end
+
+  def rank
+    # binding.pry
+    Coin.update_coin_prices
+    total_gain_loss
+    rank_order = BankAccount.order ('gain_loss DESC')
+    i = 0
+    rank_order.each do |bank_account|
+      i += 1
+      if bank_account.user_id == self.id
+        return i
+      end
+    end
+
+  end
 
 
 ############-----OLD USD TRANSACTIONS---------#################
