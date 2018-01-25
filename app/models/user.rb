@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
 ############-----NEW USER OR SIGNIN---------################
 
   def self.create_new_user(name, age, country)
-    if User.all.find {|user_instance| user_instance.name == name}
+    if self.account_verify(name)
       puts "Sorry, that user already exists. Do you want to create a new user?"
       #Need to run "Gets "
     else
@@ -16,7 +16,17 @@ class User < ActiveRecord::Base
     end
   end
 
-  def user_login
+  def self.account_verify(name)
+    #checks to make sure an account exists
+    #Returns true 
+    if User.all.find {|user_instance| user_instance.name == name}
+      true
+    else
+      false
+    end
+  end
+
+  def self.user_login
   end
 
 ############-----USD TRANSACTIONS---------#################
