@@ -42,8 +42,7 @@ def deposit_usd(usd_amount)
 
   self.bank_account.save
 
-  puts "You just deposited $#{usd_amount}."
-  puts "You have $#{self.bank_account.availible_usd_amount} availible for trading."
+
 end
 
 def buy_coin(coin_name, usd_spend)
@@ -67,8 +66,6 @@ def buy_coin(coin_name, usd_spend)
   end
 
 end
-
-
 
   def sell_coin(coin_name_input, coin_amount_to_sell)
     coin_table_name = coin_name_input.downcase + "_amount"
