@@ -1,10 +1,12 @@
 class CLI
+  #include CommandLineReporter
   attr_accessor :current_user
 
   def initialize
     @current_user = nil
     #current_user is supposed to be a User Instance
   end
+
 
   ############-----Gives Option to Quit or Go to Main Menu---------###############
 
@@ -31,8 +33,19 @@ class CLI
   ################################################################################
 
   def self.welcome
-    puts "Welcome to CryptoSimulator!"
+    a = Artii::Base.new :font => 'slant'
+    a.asciify("Welcome to CryptoSimulator!")
     puts ""
+
+
+puts"
+ _____ ___  _ ____  _____   ____  ____  _      _____ _____  _     _  _      _____
+/__ __\\  \///  __\/  __/  / ___\/  _ \/ \__/|/  __//__ __\/ \ /|/ \/ \  /|/  __/
+  / \   \  / |  \/||  \    |    \| / \|| |\/|||  \    / \  | |_||| || |\ ||| |  _
+  | |   / /  |  __/|  /_   \___ || \_/|| |  |||  /_   | |  | | ||| || | \||| |_//
+  \_/  /_/   \_/   \____\  \____/\____/\_/  \|\____\  \_/  \_/ \|\_/\_/  \|\____\ "
+
+
     cli = CLI.new
     cli.create_or_sign_in
   end
@@ -42,8 +55,13 @@ class CLI
   def create_or_sign_in
     puts "Would you like to sign in or log in to an existing account?"
     puts "Enter the number associated with your choice below:"
-    puts "-------------------------------------------------"
-    puts "1. Create a new account. 2. Log in to an existing account. 3. Exit."
+    puts ""
+
+    puts "  1. Create a new account"
+    puts "  2. Log in to an existing account"
+    puts "  3. Exit"
+
+    puts ""
     response = gets.chomp
 
     case response
@@ -65,22 +83,41 @@ class CLI
 
 
   def create_account
-    puts "Great! Let's get you setup."
-    puts "What's your name?"
+
+    puts ""
+
+    puts ColorizedString["Great! Let's get you setup."].colorize(:light_white).colorize( :background => :blue)
+
+    puts ""
+
+
+    puts ColorizedString["What's your name?"].colorize(:light_white).colorize( :background => :red)
+
     puts "(This will be the name you'll login with in the future)"
+
+    puts ""
+
     name = gets.chomp
 
     if User.account_verify(name)
-      puts "I'm sorry, that account already exists."
+      puts ""
+
+      puts ColorizedString["I'm sorry, that account already exists."].colorize(:light_white).colorize( :background => :blue)
+
+      puts ""
       create_or_sign_in
     else
       self.current_user = User.create_new_user(name)
-      puts "Congratulations, #{name}! You've just created a new account."
-      puts "Welcome to your account!"
+
+      puts ColorizedString["Congratulations, #{name}! You've just created a new account."].colorize(:light_white).colorize( :background => :blue)
+
       account_menu
     end
   end
 #checked
+
+def log_out
+end
 
 
   def signin
@@ -91,8 +128,12 @@ class CLI
       self.current_user = User.user_login(name)
 
       puts ""
-      puts "Welcome back, #{name}!"
+      #puts "Welcome back, #{name}!".colorize(:color => :light_yellow, :background => :light_cyan)
+      puts "This is blue".colorize(:blue)
       puts ""
+
+
+
 
       view_account
       account_menu
@@ -128,6 +169,8 @@ class CLI
 
 
   def view_account
+
+    #name_header = "#{self.current_user.name}'s Account".colorize(:light_green).on_black
 
     rows = []
     rows << ["Total Value of Account:", self.current_user.total_value_of_account]
@@ -173,11 +216,14 @@ class CLI
     puts "Choose an option below by entering the number associated with your choice:"
     puts ""
 
-    table = Terminal::Table.new do |t|
-      t.rows = [[1, "View Account", 2, "Deposit USD"], [3, "Deposit USD", 4, "Buy Coins"], [5, "Sell Coins", 6, "Watch prices"], [7, "Exit"]]
-      t.style = { :border_top => false, :border_bottom => false }
-    end
-    puts table
+    puts "  1. View Account"
+    puts "  2. Deposit USD"
+    puts "  3. Deposit USD"
+    puts "  4. Buy Coins"
+    puts "  5. Sell Coins"
+    puts "  6. Watch prices"
+    puts "  7. Exit"
+
     puts ""
     response = gets.chomp
 

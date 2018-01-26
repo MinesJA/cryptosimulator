@@ -1,5 +1,9 @@
 require 'bundler'
 require 'terminal-table'
+require 'colorize'
+#require 'command_line_reporter'
+require 'colorized_string'
+require 'artii'
 Bundler.require
 
 ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: 'db/development.db')
