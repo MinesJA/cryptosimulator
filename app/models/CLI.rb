@@ -220,11 +220,10 @@ class CLI
 
     puts "  1. View Account"
     puts "  2. Deposit USD"
-    puts "  3. Deposit USD"
-    puts "  4. Buy Coins"
-    puts "  5. Sell Coins"
-    puts "  6. Watch prices"
-    puts "  7. Exit"
+    puts "  3. Buy Coins"
+    puts "  4. Sell Coins"
+    puts "  5. Watch prices"
+    puts "  6. Exit"
 
     puts ""
     response = gets.chomp
@@ -238,20 +237,18 @@ class CLI
       deposit
       #check
     when "3"
-      leaderboard
-    when "4"
       view_availible_coins
       pick_coin_to_buy
       #check
-    when "5"
+    when "4"
       # puts self.current_user.select_from_balance
 
       #need to format select_from_balance and only return coins (not usd or gains)
       pick_coin_to_sell
       #check
-    when "6"
+    when "5"
       watch_prices
-    when "7"
+    when "6"
       exit_program
     else
       puts "I'm sorry, I didn't get that."

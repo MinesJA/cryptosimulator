@@ -67,10 +67,11 @@ class User < ActiveRecord::Base
       self.bank_account.save
 
       admin_account = BankAccount.all.find do |bank_account|
-        bank_account.user_id == 2
+        bank_account.user_id == 4
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
+      admin_account.gain_loss = 0.0
       admin_account.save
 # binding.pry
     end
@@ -98,10 +99,11 @@ class User < ActiveRecord::Base
       self.bank_account.availible_usd_amount += new_usd_spend
 
       admin_account = BankAccount.all.find do |bank_account|
-        bank_account.user_id == 2
+        bank_account.user_id == 4
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
+      admin_account.gain_loss = 0.0
       admin_account.save
 
     # end
@@ -113,7 +115,7 @@ class User < ActiveRecord::Base
 
   def select_from_balance
     hash_balance = self.bank_account.attributes
-    
+
     selected_balance = hash_balance.select do |key, value|
       key != "id" && key != "user_id" && key != "deposited_usd_amount" && value > 0
     end
