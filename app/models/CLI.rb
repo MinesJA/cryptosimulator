@@ -123,6 +123,7 @@ class CLI
   #checked
 
   def log_out
+
   end
 
 
@@ -225,20 +226,12 @@ class CLI
 
     puts "  1. View Account"
     puts "  2. Deposit USD"
-<<<<<<< HEAD
     # puts "  3. Deposit USD"
     puts "  4. Buy Coins"
     puts "  5. Sell Coins"
     puts "  6. Watch prices"
     puts "  7. Log Out"
     puts "  8. Exit"
-=======
-    puts "  3. Buy Coins"
-    puts "  4. Sell Coins"
-    puts "  5. Watch prices"
-    puts "  6. Exit"
->>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
-
     puts ""
     response = gets.chomp
 
@@ -262,13 +255,11 @@ class CLI
       #check
     when "5"
       watch_prices
-<<<<<<< HEAD
     when "7"
       create_or_sign_in
     when "8"
-=======
+      exit
     when "6"
->>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
       exit_program
     else
       puts "I'm sorry, I didn't get that."
