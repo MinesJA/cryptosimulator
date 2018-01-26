@@ -132,8 +132,7 @@ class CLI
     rows = []
     rows << ["Total Value of Account:", self.current_user.total_value_of_account]
     rows << ["Total Gain/Loss:", "#{self.current_user.total_gain_loss.round(4)}%"]
-    table = Terminal::Table.new :title => "#{self.current_user.name}'s Account", :rows => rows, :style => {:width => 80}
-    
+    table = Terminal::Table.new :title => "#{self.current_user.name}'s Account", :rows => rows, :style => {:width => 80, :padding_left => 3, :border_x => "=", :border_i => "x"}
 
     puts table
 
@@ -145,12 +144,14 @@ class CLI
     # | Three      | 3      |
     # +------------+--------+
 
+    puts ""
+    puts ""
 
     rows = []
     self.current_user.select_from_balance.each do |key, value|
       rows << ["#{key.upcase.gsub("_", " ")}", value]
     end
-    table = Terminal::Table.new :title => "Coin Holdings", :headings => ["Coin Name", "Coin Amount"], :rows => rows, :style => {:width => 80}
+    table = Terminal::Table.new :title => "$$$$$ Coin Holdings $$$$$", :headings => ["Coin Name", "Coin Amount"], :rows => rows, :style => {:width => 80, :padding_left => 3, :border_x => "=", :border_i => "x"}
     #table.style = {:width => 40, :padding_left => 3, :border_x => "=", :border_i => "x"}
 
     puts table
@@ -165,27 +166,19 @@ class CLI
     # | Three      | 3      |
     # +------------+--------+
 
-
-
-    # puts "#{self.current_user.name}'s Account"
-    # puts "==================================================="
-    # puts "Total Value of Account: #{self.current_user.total_value_of_account}"
-    # puts "Total Gain/Loss: #{self.current_user.total_gain_loss.round(4)}%"
-    # puts "==================================================="
-    # self.current_user.select_from_balance.each do |key, value|
-    #   puts "#{key.upcase.gsub("_", " ")} : #{value}"
-    #   nil
-    #   #Want to make sure this doesn't return the hash as well, how do we do that?
-    # end
-
-    # puts self.current_user.select_from_balance
+    puts ""
   end
 
-
-
   def account_menu
-    puts "Choose an option below by entering the number associated with your choice.:"
-    puts "1. View Account. 2. Deposit USD. 3. See leaderboard. 4. Buy coins. 5. Sell Coins. 6. Watch prices. 7. Exit "
+    puts "Choose an option below by entering the number associated with your choice:"
+    puts ""
+
+    table = Terminal::Table.new do |t|
+      t.rows = [[1, "View Account", 2, "Deposit USD"], [3, "Deposit USD", 4, "Buy Coins"], [5, "Sell Coins", 6, "Watch prices"], [7, "Exit"]]
+      t.style = { :border_top => false, :border_bottom => false }
+    end
+    puts table
+    puts ""
     response = gets.chomp
 
     case response
@@ -249,17 +242,6 @@ class CLI
     puts "Here's a list of all the availible coins for sale:"
 
     Coin.return_current_prices
-
-    # 1. Bitcoin | $11077.2
-    # 2. Ethereum | $1040.74
-    # 3. Ripple | $1.29972
-    # 4. Bitcoin Cash | $1618.5
-    # 5. Cardano | $0.62483
-    # 6. Litecoin | $178.297
-    # 7. Stellar | $0.61065
-    # 8. NEM | $0.931868
-    # 9. EOS | $13.9
-    # 10. NEO | $136.152
   end
 
   def watch_prices
