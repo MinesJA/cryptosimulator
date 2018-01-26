@@ -11,11 +11,11 @@ class CLI
   ############-----Gives Option to Quit or Go to Main Menu---------###############
 
   def choices
-    puts "Type 'exit' to exit the program or 'menu' to go to the main menu."
+    puts ""
+    puts ColorizedString["  (Type 'exit' to exit the program or 'menu' to go to the main menu.)"].colorize(:light_white).colorize( :background => :yellow)
     gets.chomp
     #should return response value
   end
-  #check
 
   def handle_choices(input)
     case input.downcase
@@ -28,23 +28,29 @@ class CLI
       input
     end
   end
-  #check
 
   ################################################################################
 
   def self.welcome
 
-    if !User.account_verify("Admin")
-  User.create_new_user("Admin")
-end
-  puts
-   " ___                 _              __ _                 _       _
-    / __\ __ _   _ _ __ | |_ ___       / _(_)_ __ ___  _   _| | __ _| |_ ___  _ __
-   / / | '__| | | | '_ \| __/ _ \ _____\ \| | '_ ` _ \| | | | |/ _` | __/ _ \| '__|
-  / /__| |  | |_| | |_) | || (_) |_____|\ \ | | | | | | |_| | | (_| | || (_) | |
-  \____/_|   \__, | .__/ \__\___/      \__/_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|
-             |___/|_|
-"
+  if !User.account_verify("Admin")
+    User.create_new_user("Admin")
+  end
+
+  puts ""
+  puts ColorizedString["                                       Welcome to                                       "].colorize(:light_white).colorize( :background => :blue)
+
+  puts "______                 __             _____ _                 __      __
+       / ____/______  ______  / /_____       / ___/(_)___ ___  __  __/ /___ _/ /_____  _____
+      / /   / ___/ / / / __ \/ __/ __ \______\__ \/ / __ `__ \/ / / / / __ `/ __/ __ \/ ___/
+     / /___/ /  / /_/ / /_/ / /_/ /_/ /_____/__/ / / / / / / / /_/ / / /_/ / /_/ /_/ / /
+     \____/_/   \__, / .___/\__/\____/     /____/_/_/ /_/ /_/\__,_/_/\__,_/\__/\____/_/
+                /____/_/
+      "
+  puts ColorizedString["                                                                                         "].colorize(:light_white).colorize( :background => :blue)
+
+  puts ""
+
 
     cli = CLI.new
     cli.create_or_sign_in
@@ -53,8 +59,8 @@ end
 
 
   def create_or_sign_in
-    puts "Would you like to sign in or log in to an existing account?"
-    puts "Enter the number associated with your choice below:"
+    puts ColorizedString[" Would you like to sign in or log in to an existing account?"].colorize(:light_white).colorize( :background => :red)
+    puts ColorizedString["    (Choose a number below)    "].colorize(:light_white).colorize( :background => :yellow)
     puts ""
 
     puts "  1. Create a new account"
@@ -93,7 +99,7 @@ end
 
     puts ColorizedString["What's your name?"].colorize(:light_white).colorize( :background => :red)
 
-    puts "(This will be the name you'll login with in the future)"
+    puts ColorizedString["(This will be the name you'll login with in the future)"].colorize(:light_white).colorize( :background => :yellow)
 
     puts ""
 
@@ -114,26 +120,19 @@ end
       account_menu
     end
   end
-#checked
+  #checked
 
-def log_out
-end
+  def log_out
+  end
 
 
   def signin
-    puts "Whats your name?"
+    puts ColorizedString["What's your name?"].colorize(:light_white).colorize( :background => :red)
+
     name = gets.chomp
 
     if User.account_verify(name)
       self.current_user = User.user_login(name)
-
-      puts ""
-      #puts "Welcome back, #{name}!".colorize(:color => :light_yellow, :background => :light_cyan)
-      puts "This is blue".colorize(:blue)
-      puts ""
-
-
-
 
       view_account
       account_menu
@@ -220,17 +219,25 @@ end
   end
 
   def account_menu
-    puts "Choose an option below by entering the number associated with your choice:"
+    puts ColorizedString["    (Choose a number below)    "].colorize(:light_white).colorize( :background => :yellow)
+
     puts ""
 
     puts "  1. View Account"
     puts "  2. Deposit USD"
+<<<<<<< HEAD
     # puts "  3. Deposit USD"
     puts "  4. Buy Coins"
     puts "  5. Sell Coins"
     puts "  6. Watch prices"
     puts "  7. Log Out"
     puts "  8. Exit"
+=======
+    puts "  3. Buy Coins"
+    puts "  4. Sell Coins"
+    puts "  5. Watch prices"
+    puts "  6. Exit"
+>>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
 
     puts ""
     response = gets.chomp
@@ -244,22 +251,24 @@ end
       deposit
       #check
     when "3"
-      leaderboard
-    when "4"
       view_availible_coins
       pick_coin_to_buy
       #check
-    when "5"
+    when "4"
       # puts self.current_user.select_from_balance
 
       #need to format select_from_balance and only return coins (not usd or gains)
       pick_coin_to_sell
       #check
-    when "6"
+    when "5"
       watch_prices
+<<<<<<< HEAD
     when "7"
       create_or_sign_in
     when "8"
+=======
+    when "6"
+>>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
       exit_program
     else
       puts "I'm sorry, I didn't get that."
@@ -458,7 +467,8 @@ end
 
 
   def exit_program
-    abort("Goodbye!")
+    abort ColorizedString[("                              Goodbye!                         ")].colorize(:light_white).colorize( :background => :blue)
+    puts ""
     #end program
   end
 

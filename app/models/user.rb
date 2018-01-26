@@ -67,7 +67,11 @@ class User < ActiveRecord::Base
       self.bank_account.save
 
       admin_account = BankAccount.all.find do |bank_account|
+<<<<<<< HEAD
         bank_account.user_id == 1
+=======
+        bank_account.user_id == 4
+>>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
@@ -99,7 +103,11 @@ class User < ActiveRecord::Base
       self.bank_account.availible_usd_amount += new_usd_spend
 
       admin_account = BankAccount.all.find do |bank_account|
+<<<<<<< HEAD
         bank_account.user_id == 1
+=======
+        bank_account.user_id == 4
+>>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
@@ -111,47 +119,11 @@ class User < ActiveRecord::Base
   #TEST
 
 
-  # def buy_coin(coin_name, usd_spend)
-  #   Coin.update_coin_prices
-  #
-  #   if usd_spend > self.bank_account.availible_usd_amount
-  #     puts "Insufficient funds. Deposit USD."
-  #   else
-  #
-  #     coin_table_name = coin_name.downcase + "_amount"
-  #
-  #     coin = Coin.all.find {|coin| coin.coin_name == coin_name}
-  #
-  #     coin_amount = usd_spend/coin.coin_price
-  #
-  #     CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Buy")
-  #
-  #     self.bank_account.availible_usd_amount -= usd_spend
-  #     self.bank_account[coin_table_name] += coin_amount
-  #     self.bank_account.save
-  #   end
-  # end
 
-  # def sell_coin(coin_name_input, coin_amount_to_sell)
-  #
-  #   coin_table_name = coin_name_input.downcase + "_amount"
-  #
-  #   Coin.update_coin_prices
-  #
-  #   coin = Coin.all.find {|coin| coin.coin_name == coin_name_input}
-  #
-  #   usd_amount_from_coin_sell = coin_amount_to_sell * coin.coin_price
-  #
-  #   # balance_coin = self.return_coin_balance.find {|coin_instance| coin_instance.coin_id == coin.id}
-  #
-  #   CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Sell")
-  #
-  #   self.bank_account[coin_table_name] -= coin_amount_to_sell
-  #   self.bank_account.availible_usd_amount += usd_amount_from_coin_sell
-  # end
 
   def select_from_balance
     hash_balance = self.bank_account.attributes
+
     selected_balance = hash_balance.select do |key, value|
       key != "id" && key != "user_id" && key != "deposited_usd_amount" && value > 0
     end
