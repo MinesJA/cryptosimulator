@@ -129,32 +129,58 @@ class CLI
 
   def view_account
 
-    puts "#{self.current_user.name}'s Account"
-    puts "==================================================="
-    puts "Total Value of Account: #{self.current_user.total_value_of_account}"
-    puts "Total Gain/Loss: #{self.current_user.total_gain_loss.round(4)}%"
-    puts "==================================================="
+    rows = []
+    rows << ["Total Value of Account:", self.current_user.total_value_of_account]
+    rows << ["Total Gain/Loss:", "#{self.current_user.total_gain_loss.round(4)}%"]
+    table = Terminal::Table.new :title => "#{self.current_user.name}'s Account", :rows => rows, :style => {:width => 80}
+    
+
+    puts table
+
+    # +------------+--------+
+    # | Jonathan's Account  |
+    # +------------+--------+
+    # | One        | 1      |
+    # | Two        | 2      |
+    # | Three      | 3      |
+    # +------------+--------+
+
+
+    rows = []
     self.current_user.select_from_balance.each do |key, value|
-      puts "#{key.upcase.gsub("_", " ")} : #{value}"
-      nil
-      #Want to make sure this doesn't return the hash as well, how do we do that?
+      rows << ["#{key.upcase.gsub("_", " ")}", value]
     end
+    table = Terminal::Table.new :title => "Coin Holdings", :headings => ["Coin Name", "Coin Amount"], :rows => rows, :style => {:width => 80}
+    #table.style = {:width => 40, :padding_left => 3, :border_x => "=", :border_i => "x"}
+
+    puts table
+
+    # +------------+--------+
+    # |     Coin Holding    |
+    # +------------+--------+
+    # | Coin Name  | Coin Am|
+    # +------------+--------+
+    # | One        | 1      |
+    # | Two        | 2      |
+    # | Three      | 3      |
+    # +------------+--------+
 
 
 
-    puts self.current_user.select_from_balance
-
-    #needs to change; see notes
-
-
-    # response = choices
-    #
-    # if handle_choices(response) == response
-    #   "I'm sorry, I didn't get that."
-    #   response = choices
+    # puts "#{self.current_user.name}'s Account"
+    # puts "==================================================="
+    # puts "Total Value of Account: #{self.current_user.total_value_of_account}"
+    # puts "Total Gain/Loss: #{self.current_user.total_gain_loss.round(4)}%"
+    # puts "==================================================="
+    # self.current_user.select_from_balance.each do |key, value|
+    #   puts "#{key.upcase.gsub("_", " ")} : #{value}"
+    #   nil
+    #   #Want to make sure this doesn't return the hash as well, how do we do that?
     # end
+
+    # puts self.current_user.select_from_balance
   end
-  ####$$$$$$$$$$$$$ ----- have a question about this one
+
 
 
   def account_menu
