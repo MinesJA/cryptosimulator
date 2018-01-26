@@ -33,25 +33,18 @@ class CLI
   ################################################################################
 
   def self.welcome
-    a = Artii::Base.new :font => 'slant'
-    a.asciify("Welcome to CryptoSimulator!")
-    puts ""
+
+  puts
+   " ___                 _              __ _                 _       _
+    / __\ __ _   _ _ __ | |_ ___       / _(_)_ __ ___  _   _| | __ _| |_ ___  _ __
+   / / | '__| | | | '_ \| __/ _ \ _____\ \| | '_ ` _ \| | | | |/ _` | __/ _ \| '__|
+  / /__| |  | |_| | |_) | || (_) |_____|\ \ | | | | | | |_| | | (_| | || (_) | |
+  \____/_|   \__, | .__/ \__\___/      \__/_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|
+             |___/|_|
 
 
-puts"
- _____ ___  _ ____  _____   ____  ____  _      _____ _____  _     _  _      _____
-/__ __\\  \///  __\/  __/  / ___\/  _ \/ \__/|/  __//__ __\/ \ /|/ \/ \  /|/  __/
-  / \   \  / |  \/||  \    |    \| / \|| |\/|||  \    / \  | |_||| || |\ ||| |  _
-  | |   / /  |  __/|  /_   \___ || \_/|| |  |||  /_   | |  | | ||| || | \||| |_//
-  \_/  /_/   \_/   \____\  \____/\____/\_/  \|\____\  \_/  \_/ \|\_/\_/  \|\____\ "
-
-
-    if !User.account_verify("Admin")
-      User.create_new_user("Admin")
-    end
     cli = CLI.new
     cli.create_or_sign_in
-
   end
   #checked
 
@@ -327,14 +320,12 @@ end
 
     #this is where you should check to see if you have enough money to complete purchase
 
-    if self.current_user.bank_account.availible_usd_amount > usd_amount
-      # usd_amount > 0
+    if usd_amount > 0
       units = coin.return_units_given_dollars(usd_amount).round(2)
       puts "Awesome! At the current price, you'd get #{units} of #{coin.coin_name} with a total USD cost of $#{usd_amount}."
       complete_purchase(coin.coin_name, usd_amount, units)
     else
-      puts "Insufficient funds. Change the amount to buy."
-      # puts "I'm sorry, I didn't get that. Please enter a positive number."
+      puts "I'm sorry, I didn't get that. Please enter a positive number."
       pick_amount_to_buy(coin)
     end
   end
@@ -347,18 +338,16 @@ end
 
     case answer.downcase
     when "y"
-      # if self.current_user.bank_account.availible_usd_amount < usd_amount
-      #   # binding.pry
-      #   # self.current_user.buy_coin(name, usd_amount)
-      #   puts "Insufficient funds. Change the amount to buy."
-      #   coin = Coin.find_by_name(name)
-      #   pick_amount_to_buy(coin)
-      # else
+      if self.current_user.buy_coin(name, usd_amount)
+        puts "Insufficient funds. Change the amount to buy."
+        coin = Coin.find_by_name(name)
+        pick_amount_to_buy(coin)
+      else
         self.current_user.buy_coin(name, usd_amount)
         puts "Great! Your transaction is confirmed."
-        puts "You now have #{unit_amount} #{name} availible in your account!"
+        puts "#{unit_amount} #{name} has been added to your account!"
         account_menu
-      # end
+      end
     when "n"
       puts "What would you like to do then?"
       puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
@@ -421,16 +410,16 @@ end
     end
   end
 
-  def complete_sale(coin_name, usd_amount)
+  def complete_sale(coin_name, amount_to_sell)
     puts "Would you like to complete your sale? (Y/N)"
     response = choices
     answer = handle_choices(response)
 
     case answer
     when "y"
-      self.current_user.sell_coin(coin_name, usd_amount)
+      self.current_user.sell_coin(coin_name, amount_to_sell)
       puts "Great! Your transaction is confirmed."
-      puts "You just sold #{coin_name} worth $#{usd_amount} ."
+      puts "You just sold #{amount_to_sell} #{coin_name}."
       account_menu
     when "n"
       puts "What would you like to do then?"
