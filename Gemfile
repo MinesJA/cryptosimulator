@@ -7,3 +7,6 @@ gem "pry"
 gem "require_all"
 gem 'rest-client'
 gem 'terminal-table'
+gem 'colorize'
+gem 'artii'
+#gem 'command_line_reporter', '>=3.0'

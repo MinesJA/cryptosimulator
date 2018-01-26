@@ -39,9 +39,11 @@ class CLI
 
 
 puts"
-
-
-"
+ _____ ___  _ ____  _____   ____  ____  _      _____ _____  _     _  _      _____
+/__ __\\  \///  __\/  __/  / ___\/  _ \/ \__/|/  __//__ __\/ \ /|/ \/ \  /|/  __/
+  / \   \  / |  \/||  \    |    \| / \|| |\/|||  \    / \  | |_||| || |\ ||| |  _
+  | |   / /  |  __/|  /_   \___ || \_/|| |  |||  /_   | |  | | ||| || | \||| |_//
+  \_/  /_/   \_/   \____\  \____/\____/\_/  \|\____\  \_/  \_/ \|\_/\_/  \|\____\ "
 
 
     cli = CLI.new
@@ -114,8 +116,8 @@ puts"
   end
 #checked
 
-  def log_out
-  end
+def log_out
+end
 
 
   def signin
@@ -170,6 +172,7 @@ puts"
 
     #name_header = "#{self.current_user.name}'s Account".colorize(:light_green).on_black
 
+
     rows = []
     rows << ["Total Value of Account:", self.current_user.total_value_of_account]
     rows << ["Total Gain/Loss:", "#{self.current_user.total_gain_loss.round(4)}%"]
@@ -206,6 +209,7 @@ puts"
     # | Two        | 2      |
     # | Three      | 3      |
     # +------------+--------+
+
 
     puts ""
   end

@@ -36,11 +36,30 @@ class Coin < ActiveRecord::Base
     Coin.update_coin_prices
 
     i = 0
+    rows = []
 
     Coin.all.each do |coin|
       i += 1
-      puts "#{i}. #{coin.coin_name} | $#{coin.coin_price}"
-    end; nil
+      rows << ["#{i}.", coin.coin_name, "$#{coin.coin_price.round(2)}"]
+    end
+
+    table = Terminal::Table.new :headings => ["Num", "Coin Name", "USD Price"], :rows => rows
+    table.align_column(1, :right)
+
+
+    puts table
+
+# 1. Bitcoin | $11230.5
+# 2. Ethereum | $1045.18
+# 3. Ripple | $1.3073
+# 4. Bitcoin Cash | $1637.52
+# 5. Cardano | $0.634643
+# 6. Stellar | $0.60337
+# 7. Litecoin | $179.974
+# 8. NEO | $137.559
+# 9. EOS | $14.3091
+# 10. NEM | $0.946028
+
   end
 
 
