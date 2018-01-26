@@ -67,7 +67,7 @@ class User < ActiveRecord::Base
       self.bank_account.save
 
       admin_account = BankAccount.all.find do |bank_account|
-        bank_account.user_id == 28
+        bank_account.user_id == 2
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
@@ -98,7 +98,7 @@ class User < ActiveRecord::Base
       self.bank_account.availible_usd_amount += new_usd_spend
 
       admin_account = BankAccount.all.find do |bank_account|
-        bank_account.user_id == 28
+        bank_account.user_id == 2
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
