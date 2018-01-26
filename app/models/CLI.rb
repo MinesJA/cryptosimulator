@@ -319,8 +319,9 @@ end
     usd_amount = handle_choices(response).to_f.round(2)
 
     #this is where you should check to see if you have enough money to complete purchase
-
-    if usd_amount > 0
+    # This file has changed
+    if self.current_user.bank_account.availible_usd_amount > usd_amount
+      # usd_amount > 0
       units = coin.return_units_given_dollars(usd_amount).round(2)
       puts "Awesome! At the current price, you'd get #{units} of #{coin.coin_name} with a total USD cost of $#{usd_amount}."
       complete_purchase(coin.coin_name, usd_amount, units)
