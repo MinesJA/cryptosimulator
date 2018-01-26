@@ -67,11 +67,7 @@ class User < ActiveRecord::Base
       self.bank_account.save
 
       admin_account = BankAccount.all.find do |bank_account|
-<<<<<<< HEAD
         bank_account.user_id == 1
-=======
-        bank_account.user_id == 4
->>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
@@ -103,11 +99,7 @@ class User < ActiveRecord::Base
       self.bank_account.availible_usd_amount += new_usd_spend
 
       admin_account = BankAccount.all.find do |bank_account|
-<<<<<<< HEAD
         bank_account.user_id == 1
-=======
-        bank_account.user_id == 4
->>>>>>> 6257231d999f66a29a6a7d0106cbfcb3416fb6f7
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
