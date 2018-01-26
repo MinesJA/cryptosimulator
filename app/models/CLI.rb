@@ -11,11 +11,11 @@ class CLI
   ############-----Gives Option to Quit or Go to Main Menu---------###############
 
   def choices
-    puts "Type 'exit' to exit the program or 'menu' to go to the main menu."
+    puts ""
+    puts ColorizedString["  (Type 'exit' to exit the program or 'menu' to go to the main menu.)"].colorize(:light_white).colorize( :background => :yellow)
     gets.chomp
     #should return response value
   end
-  #check
 
   def handle_choices(input)
     case input.downcase
@@ -28,20 +28,24 @@ class CLI
       input
     end
   end
-  #check
 
   ################################################################################
 
   def self.welcome
 
-  puts
-   " ___                 _              __ _                 _       _
-    / __\ __ _   _ _ __ | |_ ___       / _(_)_ __ ___  _   _| | __ _| |_ ___  _ __
-   / / | '__| | | | '_ \| __/ _ \ _____\ \| | '_ ` _ \| | | | |/ _` | __/ _ \| '__|
-  / /__| |  | |_| | |_) | || (_) |_____|\ \ | | | | | | |_| | | (_| | || (_) | |
-  \____/_|   \__, | .__/ \__\___/      \__/_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|
-             |___/|_|
+  puts ""
+  puts ColorizedString["                                       Welcome to                                       "].colorize(:light_white).colorize( :background => :blue)
 
+  puts "______                 __             _____ _                 __      __
+       / ____/______  ______  / /_____       / ___/(_)___ ___  __  __/ /___ _/ /_____  _____
+      / /   / ___/ / / / __ \/ __/ __ \______\__ \/ / __ `__ \/ / / / / __ `/ __/ __ \/ ___/
+     / /___/ /  / /_/ / /_/ / /_/ /_/ /_____/__/ / / / / / / / /_/ / / /_/ / /_/ /_/ / /
+     \____/_/   \__, / .___/\__/\____/     /____/_/_/ /_/ /_/\__,_/_/\__,_/\__/\____/_/
+                /____/_/
+      "
+  puts ColorizedString["                                                                                         "].colorize(:light_white).colorize( :background => :blue)
+
+  puts ""
 
     cli = CLI.new
     cli.create_or_sign_in
@@ -50,8 +54,8 @@ class CLI
 
 
   def create_or_sign_in
-    puts "Would you like to sign in or log in to an existing account?"
-    puts "Enter the number associated with your choice below:"
+    puts ColorizedString[" Would you like to sign in or log in to an existing account?"].colorize(:light_white).colorize( :background => :red)
+    puts ColorizedString["    (Choose a number below)    "].colorize(:light_white).colorize( :background => :yellow)
     puts ""
 
     puts "  1. Create a new account"
@@ -90,7 +94,7 @@ class CLI
 
     puts ColorizedString["What's your name?"].colorize(:light_white).colorize( :background => :red)
 
-    puts "(This will be the name you'll login with in the future)"
+    puts ColorizedString["(This will be the name you'll login with in the future)"].colorize(:light_white).colorize( :background => :yellow)
 
     puts ""
 
@@ -118,20 +122,13 @@ end
 
 
   def signin
-    puts "Whats your name?"
+    puts ColorizedString["What's your name?"].colorize(:light_white).colorize( :background => :red)
+
     name = gets.chomp
 
     if User.account_verify(name)
       self.current_user = User.user_login(name)
-
-      puts ""
-      #puts "Welcome back, #{name}!".colorize(:color => :light_yellow, :background => :light_cyan)
-      puts "This is blue".colorize(:blue)
-      puts ""
-
-
-
-
+      
       view_account
       account_menu
     else
@@ -212,7 +209,8 @@ end
   end
 
   def account_menu
-    puts "Choose an option below by entering the number associated with your choice:"
+    puts ColorizedString["    (Choose a number below)    "].colorize(:light_white).colorize( :background => :yellow)
+
     puts ""
 
     puts "  1. View Account"
@@ -447,7 +445,8 @@ end
 
 
   def exit_program
-    abort("Goodbye!")
+    abort ColorizedString[("                              Goodbye!                         ")].colorize(:light_white).colorize( :background => :blue)
+    puts ""
     #end program
   end
 
