@@ -33,8 +33,12 @@ class CLI
   def self.welcome
     puts "Welcome to CryptoSimulator!"
     puts ""
+    if !User.account_verify("Admin")
+      User.create_new_user("Admin")
+    end
     cli = CLI.new
     cli.create_or_sign_in
+
   end
   #checked
 
@@ -134,16 +138,14 @@ class CLI
     puts "Total Value of Account: #{self.current_user.total_value_of_account}"
     puts "Total Gain/Loss: #{self.current_user.total_gain_loss.round(4)}%"
     puts "==================================================="
-    self.current_user.select_from_balance.each do |key, value|
-      puts "#{key.upcase.gsub("_", " ")} : #{value}"
-      nil
+    self.current_user.select_from_balance.map do |key, value|
+      puts "#{key.upcase.gsub("_", " ")} : #{value.round(4)}"
+      puts "---------------------------------------------------"
+
       #Want to make sure this doesn't return the hash as well, how do we do that?
     end
-
-
-
-    puts self.current_user.select_from_balance
-
+    # puts self.current_user.select_from_balance
+    # binding.pry
     #needs to change; see notes
 
 
@@ -267,12 +269,14 @@ class CLI
 
     #this is where you should check to see if you have enough money to complete purchase
 
-    if usd_amount > 0
+    if self.current_user.bank_account.availible_usd_amount > usd_amount
+      # usd_amount > 0
       units = coin.return_units_given_dollars(usd_amount).round(2)
       puts "Awesome! At the current price, you'd get #{units} of #{coin.coin_name} with a total USD cost of $#{usd_amount}."
       complete_purchase(coin.coin_name, usd_amount, units)
     else
-      puts "I'm sorry, I didn't get that. Please enter a positive number."
+      puts "Insufficient funds. Change the amount to buy."
+      # puts "I'm sorry, I didn't get that. Please enter a positive number."
       pick_amount_to_buy(coin)
     end
   end
@@ -285,16 +289,18 @@ class CLI
 
     case answer.downcase
     when "y"
-      if self.current_user.buy_coin(name, usd_amount)
-        puts "Insufficient funds. Change the amount to buy."
-        coin = Coin.find_by_name(name)
-        pick_amount_to_buy(coin)
-      else
+      # if self.current_user.bank_account.availible_usd_amount < usd_amount
+      #   # binding.pry
+      #   # self.current_user.buy_coin(name, usd_amount)
+      #   puts "Insufficient funds. Change the amount to buy."
+      #   coin = Coin.find_by_name(name)
+      #   pick_amount_to_buy(coin)
+      # else
         self.current_user.buy_coin(name, usd_amount)
         puts "Great! Your transaction is confirmed."
         puts "You now have #{unit_amount} #{name} availible in your account!"
         account_menu
-      end
+      # end
     when "n"
       puts "What would you like to do then?"
       puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
@@ -357,16 +363,16 @@ class CLI
     end
   end
 
-  def complete_sale(coin_name, amount_to_sell)
+  def complete_sale(coin_name, usd_amount)
     puts "Would you like to complete your sale? (Y/N)"
     response = choices
     answer = handle_choices(response)
 
     case answer
     when "y"
-      self.current_user.sell_coin(coin_name, amount_to_sell)
+      self.current_user.sell_coin(coin_name, usd_amount)
       puts "Great! Your transaction is confirmed."
-      puts "You just sold #{amount_to_sell} #{coin_name}."
+      puts "You just sold #{coin_name} worth $#{usd_amount} ."
       account_menu
     when "n"
       puts "What would you like to do then?"
