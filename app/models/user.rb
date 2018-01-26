@@ -49,21 +49,30 @@ class User < ActiveRecord::Base
   #TEST
   def buy_coin(coin_name, usd_spend)
     Coin.update_coin_prices
-
-    if usd_spend > self.bank_account.availible_usd_amount
+    admin_fee = usd_spend * 0.01
+    new_usd_spend = usd_spend - admin_fee
+    if new_usd_spend > self.bank_account.availible_usd_amount
       true
     else
       coin_table_name = BankAccount.bank_account_translator(coin_name)
 
       coin = Coin.find_by_name(coin_name)
 
-      coin_amount = coin.return_units_given_dollars(usd_spend)
+      coin_amount = coin.return_units_given_dollars(new_usd_spend)
 
       CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: coin_amount, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Buy")
 
       self.bank_account.availible_usd_amount -= usd_spend
       self.bank_account[coin_table_name] += coin_amount
       self.bank_account.save
+
+      admin_account = BankAccount.all.find do |bank_account|
+        bank_account.user_id == 28
+      end
+      admin_account.deposited_usd_amount += admin_fee
+      admin_account.availible_usd_amount = admin_account.deposited_usd_amount
+      admin_account.save
+# binding.pry
     end
   end
 
@@ -74,17 +83,28 @@ class User < ActiveRecord::Base
     coin_table_name = BankAccount.bank_account_translator(coin_name)
     coin = Coin.find_by_name(coin_name)
 
-    if bank_account[coin_table_name] < amount_to_sell
-      puts "Sorry, you don't have enough #{coin_name} to sell #{amount_to_sell}."
-      cli.pick_amount_to_sell
-    else
+    # if bank_account[coin_table_name] < amount_to_sell
+    #   puts "Sorry, you don't have enough #{coin_name} to sell #{amount_to_sell}."
+    #   # CLI.pick_amount_to_sell
+    # else
       usd_sale_total = amount_to_sell * coin.coin_price
+
+      admin_fee = usd_sale_total * 0.01
+      new_usd_spend = usd_sale_total - admin_fee
 
       CoinTransaction.create(user_id: self.id, coin_id: coin.id, coin_amount: amount_to_sell, coin_price: coin.coin_price, coin_transaction_date: Time.now.getutc, coin_transaction_type: "Sell")
 
       self.bank_account[coin_table_name] -= amount_to_sell
-      self.bank_account.availible_usd_amount += usd_sale_total
-    end
+      self.bank_account.availible_usd_amount += new_usd_spend
+
+      admin_account = BankAccount.all.find do |bank_account|
+        bank_account.user_id == 28
+      end
+      admin_account.deposited_usd_amount += admin_fee
+      admin_account.availible_usd_amount = admin_account.deposited_usd_amount
+      admin_account.save
+
+    # end
   end
   #TEST
 
