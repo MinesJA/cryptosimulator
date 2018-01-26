@@ -209,17 +209,38 @@ class User < ActiveRecord::Base
   def rank
     # binding.pry
     Coin.update_coin_prices
+
     total_gain_loss
-    rank_order = BankAccount.order ('gain_loss ASC')
-    rank_order_no_admin = BankAccount.where.not(id: 1)
+    no_admin = BankAccount.where.not(id: 1)
+    rank_order = no_admin.order ('gain_loss DESC')
+
+
     i = 0
-    rank_order_no_admin.each do |bank_account|
+    rank_order.each do |bank_account|
       i += 1
       if bank_account.user_id == self.id
         return i
       end
+      # binding.pry
+
+      end
     end
-binding.pry
+
+
+def self.return_ranks
+  name_rank_array = []
+  self.all.each do |u|
+    if u.name != "Admin"
+      user_hash = {}
+      user_hash[:user] = u
+      user_hash[:rank] = u.rank
+    end
+
+    name_rank_array << user_hash
+  end
+  sorted_by_rank = name_rank_array.sort_by {|k| k["rank"]}
+end
+
   end
 
 
@@ -363,4 +384,4 @@ binding.pry
 
 
 
-end
+# end
