@@ -33,6 +33,10 @@ class CLI
 
   def self.welcome
 
+  if !User.account_verify("Admin")
+    User.create_new_user("Admin")
+  end
+
   puts ""
   puts ColorizedString["                                       Welcome to                                       "].colorize(:light_white).colorize( :background => :blue)
 
@@ -46,6 +50,7 @@ class CLI
   puts ColorizedString["                                                                                         "].colorize(:light_white).colorize( :background => :blue)
 
   puts ""
+
 
     cli = CLI.new
     cli.create_or_sign_in
@@ -128,7 +133,7 @@ end
 
     if User.account_verify(name)
       self.current_user = User.user_login(name)
-      
+
       view_account
       account_menu
     else
@@ -239,7 +244,7 @@ end
       pick_coin_to_buy
       #check
     when "5"
-      puts self.current_user.select_from_balance
+      # puts self.current_user.select_from_balance
 
       #need to format select_from_balance and only return coins (not usd or gains)
       pick_coin_to_sell
@@ -324,7 +329,7 @@ end
       puts "Awesome! At the current price, you'd get #{units} of #{coin.coin_name} with a total USD cost of $#{usd_amount}."
       complete_purchase(coin.coin_name, usd_amount, units)
     else
-      puts "I'm sorry, I didn't get that. Please enter a positive number."
+      puts "Insufficient Funds. Please lower your expectations."
       pick_amount_to_buy(coin)
     end
   end
@@ -337,16 +342,16 @@ end
 
     case answer.downcase
     when "y"
-      if self.current_user.buy_coin(name, usd_amount)
-        puts "Insufficient funds. Change the amount to buy."
-        coin = Coin.find_by_name(name)
-        pick_amount_to_buy(coin)
-      else
+      # if self.current_user.buy_coin(name, usd_amount)
+      #   puts "Insufficient funds. Change the amount to buy."
+      #   coin = Coin.find_by_name(name)
+      #   pick_amount_to_buy(coin)
+      # else
         self.current_user.buy_coin(name, usd_amount)
         puts "Great! Your transaction is confirmed."
         puts "#{unit_amount} #{name} has been added to your account!"
         account_menu
-      end
+      # end
     when "n"
       puts "What would you like to do then?"
       puts "1. Return to main menu. 2. Change USD amount. 3. Change coin. 4. Exit"
@@ -404,7 +409,7 @@ end
       puts "Awesome! You'd like to sell #{amount_to_sell} #{coin.coin_name} for $#{usd_amount}."
       complete_sale(coin.coin_name, usd_amount)
     else
-      puts "I'm sorry, I didn't get that. Please enter a positive number."
+      puts "Not enough coins. Try again."
       pick_amount_to_sell(coin)
     end
   end
