@@ -120,10 +120,10 @@ class CLI
       account_menu
     end
   end
-#checked
+  #checked
 
-def log_out
-end
+  def log_out
+  end
 
 
   def signin
