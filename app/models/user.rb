@@ -67,10 +67,11 @@ class User < ActiveRecord::Base
       self.bank_account.save
 
       admin_account = BankAccount.all.find do |bank_account|
-        bank_account.user_id == 2
+        bank_account.user_id == 1
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
+      admin_account.gain_loss = 0.0
       admin_account.save
 # binding.pry
     end
@@ -98,10 +99,11 @@ class User < ActiveRecord::Base
       self.bank_account.availible_usd_amount += new_usd_spend
 
       admin_account = BankAccount.all.find do |bank_account|
-        bank_account.user_id == 2
+        bank_account.user_id == 1
       end
       admin_account.deposited_usd_amount += admin_fee
       admin_account.availible_usd_amount = admin_account.deposited_usd_amount
+      admin_account.gain_loss = 0.0
       admin_account.save
 
     # end
@@ -196,7 +198,7 @@ class User < ActiveRecord::Base
     end
 
     deposited = selected_balance["deposited_usd_amount"]
-    gain_loss = (((total_value_of_account - deposited)/deposited).round(5))*100
+    gain_loss = (((total_value_of_account - deposited)/deposited).round(2))*100
 
     self.bank_account.gain_loss = gain_loss
     self.bank_account.save
@@ -208,15 +210,16 @@ class User < ActiveRecord::Base
     # binding.pry
     Coin.update_coin_prices
     total_gain_loss
-    rank_order = BankAccount.order ('gain_loss DESC')
+    rank_order = BankAccount.order ('gain_loss ASC')
+    rank_order_no_admin = BankAccount.where.not(id: 1)
     i = 0
-    rank_order.each do |bank_account|
+    rank_order_no_admin.each do |bank_account|
       i += 1
       if bank_account.user_id == self.id
         return i
       end
     end
-
+binding.pry
   end
 
 

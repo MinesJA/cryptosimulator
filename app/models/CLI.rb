@@ -176,6 +176,11 @@ end
     rows = []
     rows << ["Total Value of Account:", self.current_user.total_value_of_account]
     rows << ["Total Gain/Loss:", "#{self.current_user.total_gain_loss.round(4)}%"]
+
+    if self.current_user.name != "Admin"
+      rows << ["You Rank:", self.current_user.rank]
+    end
+
     table = Terminal::Table.new :title => "#{self.current_user.name}'s Account", :rows => rows, :style => {:width => 80, :padding_left => 3, :border_x => "=", :border_i => "x"}
 
     puts table
@@ -220,11 +225,12 @@ end
 
     puts "  1. View Account"
     puts "  2. Deposit USD"
-    puts "  3. Deposit USD"
+    # puts "  3. Deposit USD"
     puts "  4. Buy Coins"
     puts "  5. Sell Coins"
     puts "  6. Watch prices"
-    puts "  7. Exit"
+    puts "  7. Log Out"
+    puts "  8. Exit"
 
     puts ""
     response = gets.chomp
@@ -252,6 +258,8 @@ end
     when "6"
       watch_prices
     when "7"
+      create_or_sign_in
+    when "8"
       exit_program
     else
       puts "I'm sorry, I didn't get that."
@@ -407,7 +415,7 @@ end
     if amount_to_sell < self.current_user.bank_account[coin_table_name]
       usd_amount = amount_to_sell * coin.coin_price
       puts "Awesome! You'd like to sell #{amount_to_sell} #{coin.coin_name} for $#{usd_amount}."
-      complete_sale(coin.coin_name, usd_amount)
+      complete_sale(coin.coin_name, amount_to_sell)
     else
       puts "Not enough coins. Try again."
       pick_amount_to_sell(coin)
