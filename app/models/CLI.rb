@@ -1,10 +1,12 @@
 class CLI
+  #include CommandLineReporter
   attr_accessor :current_user
 
   def initialize
     @current_user = nil
     #current_user is supposed to be a User Instance
   end
+
 
   ############-----Gives Option to Quit or Go to Main Menu---------###############
 
@@ -31,8 +33,17 @@ class CLI
   ################################################################################
 
   def self.welcome
-    puts "Welcome to CryptoSimulator!"
+    a = Artii::Base.new :font => 'slant'
+    a.asciify("Welcome to CryptoSimulator!")
     puts ""
+
+
+puts"
+
+
+"
+
+
     cli = CLI.new
     cli.create_or_sign_in
   end
@@ -42,8 +53,13 @@ class CLI
   def create_or_sign_in
     puts "Would you like to sign in or log in to an existing account?"
     puts "Enter the number associated with your choice below:"
-    puts "-------------------------------------------------"
-    puts "1. Create a new account. 2. Log in to an existing account. 3. Exit."
+    puts ""
+
+    puts "  1. Create a new account"
+    puts "  2. Log in to an existing account"
+    puts "  3. Exit"
+
+    puts ""
     response = gets.chomp
 
     case response
@@ -65,22 +81,41 @@ class CLI
 
 
   def create_account
-    puts "Great! Let's get you setup."
-    puts "What's your name?"
+
+    puts ""
+
+    puts ColorizedString["Great! Let's get you setup."].colorize(:light_white).colorize( :background => :blue)
+
+    puts ""
+
+
+    puts ColorizedString["What's your name?"].colorize(:light_white).colorize( :background => :red)
+
     puts "(This will be the name you'll login with in the future)"
+
+    puts ""
+
     name = gets.chomp
 
     if User.account_verify(name)
-      puts "I'm sorry, that account already exists."
+      puts ""
+
+      puts ColorizedString["I'm sorry, that account already exists."].colorize(:light_white).colorize( :background => :blue)
+
+      puts ""
       create_or_sign_in
     else
       self.current_user = User.create_new_user(name)
-      puts "Congratulations, #{name}! You've just created a new account."
-      puts "Welcome to your account!"
+
+      puts ColorizedString["Congratulations, #{name}! You've just created a new account."].colorize(:light_white).colorize( :background => :blue)
+
       account_menu
     end
   end
 #checked
+
+  def log_out
+  end
 
 
   def signin
@@ -91,8 +126,12 @@ class CLI
       self.current_user = User.user_login(name)
 
       puts ""
-      puts "Welcome back, #{name}!"
+      #puts "Welcome back, #{name}!".colorize(:color => :light_yellow, :background => :light_cyan)
+      puts "This is blue".colorize(:blue)
       puts ""
+
+
+
 
       view_account
       account_menu
@@ -129,37 +168,61 @@ class CLI
 
   def view_account
 
-    puts "#{self.current_user.name}'s Account"
-    puts "==================================================="
-    puts "Total Value of Account: #{self.current_user.total_value_of_account}"
-    puts "Total Gain/Loss: #{self.current_user.total_gain_loss.round(4)}%"
-    puts "==================================================="
+    #name_header = "#{self.current_user.name}'s Account".colorize(:light_green).on_black
+
+    rows = []
+    rows << ["Total Value of Account:", self.current_user.total_value_of_account]
+    rows << ["Total Gain/Loss:", "#{self.current_user.total_gain_loss.round(4)}%"]
+    table = Terminal::Table.new :title => "#{self.current_user.name}'s Account", :rows => rows, :style => {:width => 80, :padding_left => 3, :border_x => "=", :border_i => "x"}
+
+    puts table
+
+    # +------------+--------+
+    # | Jonathan's Account  |
+    # +------------+--------+
+    # | One        | 1      |
+    # | Two        | 2      |
+    # | Three      | 3      |
+    # +------------+--------+
+
+    puts ""
+    puts ""
+
+    rows = []
     self.current_user.select_from_balance.each do |key, value|
-      puts "#{key.upcase.gsub("_", " ")} : #{value}"
-      nil
-      #Want to make sure this doesn't return the hash as well, how do we do that?
+      rows << ["#{key.upcase.gsub("_", " ")}", value]
     end
+    table = Terminal::Table.new :title => "$$$$$ Coin Holdings $$$$$", :headings => ["Coin Name", "Coin Amount"], :rows => rows, :style => {:width => 80, :padding_left => 3, :border_x => "=", :border_i => "x"}
+    #table.style = {:width => 40, :padding_left => 3, :border_x => "=", :border_i => "x"}
 
+    puts table
 
+    # +------------+--------+
+    # |     Coin Holding    |
+    # +------------+--------+
+    # | Coin Name  | Coin Am|
+    # +------------+--------+
+    # | One        | 1      |
+    # | Two        | 2      |
+    # | Three      | 3      |
+    # +------------+--------+
 
-    puts self.current_user.select_from_balance
-
-    #needs to change; see notes
-
-
-    # response = choices
-    #
-    # if handle_choices(response) == response
-    #   "I'm sorry, I didn't get that."
-    #   response = choices
-    # end
+    puts ""
   end
-  ####$$$$$$$$$$$$$ ----- have a question about this one
-
 
   def account_menu
-    puts "Choose an option below by entering the number associated with your choice.:"
-    puts "1. View Account. 2. Deposit USD. 3. See leaderboard. 4. Buy coins. 5. Sell Coins. 6. Watch prices. 7. Exit "
+    puts "Choose an option below by entering the number associated with your choice:"
+    puts ""
+
+    puts "  1. View Account"
+    puts "  2. Deposit USD"
+    puts "  3. Deposit USD"
+    puts "  4. Buy Coins"
+    puts "  5. Sell Coins"
+    puts "  6. Watch prices"
+    puts "  7. Exit"
+
+    puts ""
     response = gets.chomp
 
     case response
@@ -223,17 +286,6 @@ class CLI
     puts "Here's a list of all the availible coins for sale:"
 
     Coin.return_current_prices
-
-    # 1. Bitcoin | $11077.2
-    # 2. Ethereum | $1040.74
-    # 3. Ripple | $1.29972
-    # 4. Bitcoin Cash | $1618.5
-    # 5. Cardano | $0.62483
-    # 6. Litecoin | $178.297
-    # 7. Stellar | $0.61065
-    # 8. NEM | $0.931868
-    # 9. EOS | $13.9
-    # 10. NEO | $136.152
   end
 
   def watch_prices
