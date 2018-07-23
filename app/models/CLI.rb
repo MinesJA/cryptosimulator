@@ -120,11 +120,7 @@ class CLI
       account_menu
     end
   end
-  #checked
 
-  def log_out
-
-  end
 
 
   def signin
@@ -227,11 +223,11 @@ class CLI
     puts "  1. View Account"
     puts "  2. Deposit USD"
     # puts "  3. Deposit USD"
-    puts "  4. Buy Coins"
-    puts "  5. Sell Coins"
-    puts "  6. Watch prices"
-    puts "  7. Log Out"
-    puts "  8. Exit"
+    puts "  3. Buy Coins"
+    puts "  4. Sell Coins"
+    puts "  5. Watch prices"
+    puts "  6. Log Out"
+    puts "  7. Exit"
     puts ""
     response = gets.chomp
 
@@ -248,6 +244,7 @@ class CLI
       pick_coin_to_buy
       #check
     when "4"
+      view_account
       # puts self.current_user.select_from_balance
 
       #need to format select_from_balance and only return coins (not usd or gains)
@@ -255,11 +252,9 @@ class CLI
       #check
     when "5"
       watch_prices
-    when "7"
-      create_or_sign_in
-    when "8"
-      exit
     when "6"
+      exit
+    when "7"
       exit_program
     else
       puts "I'm sorry, I didn't get that."
