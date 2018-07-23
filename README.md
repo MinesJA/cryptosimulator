@@ -12,5 +12,8 @@ Fork and clone the repo to your local drive and run:
 ## Technology
 Built in Ruby using Sinatra and ActiveRecord with a Sqlite3 database.
 
+### To Do
+1. Implement Web-Sockets.
+
 
 
