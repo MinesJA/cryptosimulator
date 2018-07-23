@@ -10,7 +10,7 @@ Fork and clone the repo to your local drive and run:
 `bundle exec ruby bin/run.rb`
 
 ## Technology
-Built in Ruby using Sinatra and ActiveRecord with a Sqlite3 database.
+Built with Ruby using Sinatra and ActiveRecord with a Sqlite3 database.
 
 ### To Do
 1. Implement Web-Sockets.
