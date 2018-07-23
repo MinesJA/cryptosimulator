@@ -1,7 +1,5 @@
 CryptoSimulator
 ===============
-
-## Overview 
 A CLI app that allows users to simulate trading real cryptocurrencies at current market prices. Users can log in to their account at any time and pull up their past trades, current portfolio, view their gains/losses, and add (fake) USD.
 
 ## Getting Started
